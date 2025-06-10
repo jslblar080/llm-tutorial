@@ -7,10 +7,7 @@ from config import Config
 class Embedder:
 
     @staticmethod
-    def to_vector(word2idx_dict: dict):
+    def to_vector(token_ids: list) -> None:
 
-        embed_layer = nn.Embedding(len(word2idx_dict), Config().embedding_dim)
-        embeddings = embed_layer(torch.tensor(list(word2idx_dict.values()))).unsqueeze(
-            0
-        )
-        print("input_embeddings.shape:", embeddings.shape)
+        embedding_layer = nn.Embedding(len(token_ids), Config().embedding_dim)
+        print("\nWeight of embedding layer:\n", embedding_layer.weight)

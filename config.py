@@ -5,4 +5,4 @@ class Config(metaclass=SingletonMeta):
 
     def __init__(self) -> None:
         self.text = "Hello, world. This, is a test."
-        self.embedding_dim = 16
+        self.embedding_dim = 3

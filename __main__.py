@@ -13,11 +13,12 @@ from text_processor import TextProcessor
 if __name__ == "__main__":
 
     text_processor = TextProcessor()
-    word2idx_dict = text_processor.split(
-        Config().text, verbose=True, idx_value=True, dict=True
+    token2id = text_processor.tokenize(
+        Config().text, verbose=True, id_end=True, pair=True
     )
 
     embedder = Embedder()
-    embedder.to_vector(word2idx_dict)
+    token_ids = [id for token, id in token2id]
+    embedder.to_vector(token_ids)
 
-    # TODO: Specify text splitting and tokenizing
+    # TODO: Data sampling with a sliding window

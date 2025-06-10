@@ -1,25 +1,30 @@
+import tiktoken
+
+
 class TextProcessor:
 
     @staticmethod
-    def split(text: str, verbose=False, idx_value=False, dict=False):
+    def tokenize(text: str, verbose=False, id_end=False, pair=False) -> list:
 
-        words_list = text.split()
+        bpe_tokenizer = tiktoken.get_encoding("o200k_base")
 
-        word2idx_dict = {word: idx for idx, word in enumerate(words_list)}
-        idx2word_dict = {idx: word for idx, word in enumerate(words_list)}
-        idxs_list = [word2idx_dict[word] for word in words_list]
+        ids = bpe_tokenizer.encode(text)
+        bytes = [bpe_tokenizer.decode_single_token_bytes(id) for id in ids]
+        tokens = [byte.decode("utf-8") for byte in bytes]
+        token2id = list(zip(tokens, ids))
+        id2token = list(zip(ids, tokens))
 
-        category_idx = (idx_value << 1) | dict
+        category_idx = (id_end << 1) | pair
         category_dict = {
-            0: ["list of words:", words_list],
-            1: ["dictionary of index to word:", idx2word_dict],
-            2: ["list of indexes:", idxs_list],
-            3: ["dictionary of word to index:", word2idx_dict],
+            0: ["token:", tokens],
+            1: ["(id, token):", id2token],
+            2: ["token id:", ids],
+            3: ["(token, id):", token2id],
         }
 
-        category_list = category_dict.get(category_idx, ["list of words: ", words_list])
+        category_list = category_dict.get(category_idx, ["token:", tokens])
 
         if verbose:
-            print(category_list[0], category_list[1])
+            print("\n", category_list[0], category_list[1])
 
         return category_list[1]
