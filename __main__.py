@@ -1,7 +1,7 @@
 # Install Black Formatter using shift+alt+F as shortcut key
 
 # pip install uv
-# uv venv --python=python3.10
+# uv venv --python=python3.10 --seed
 # source .venv/bin/activate
 # uv pip install -r requirements.txt
 
