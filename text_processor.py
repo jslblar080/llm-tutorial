@@ -1,12 +1,14 @@
 import tiktoken
 
+from config import Config
+
 
 class TextProcessor:
 
     @staticmethod
     def tokenize(text: str, verbose=False, id_end=False, pair=False) -> list:
 
-        bpe_tokenizer = tiktoken.get_encoding("o200k_base")
+        bpe_tokenizer = tiktoken.get_encoding(Config().encoding)
 
         ids = bpe_tokenizer.encode(text)
         bytes = [bpe_tokenizer.decode_single_token_bytes(id) for id in ids]
