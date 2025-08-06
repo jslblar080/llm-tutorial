@@ -13,6 +13,14 @@ from text_processor import TextProcessor
 if __name__ == "__main__":
 
     text_processor = TextProcessor()
+    print(
+        "\n",
+        "".join(
+            text_processor.tokenize(
+                Config().texts, verbose=False, id_end=False, pair=False
+            )
+        ),
+    )
     token2id = text_processor.tokenize(
         Config().texts, verbose=True, id_end=True, pair=True
     )
