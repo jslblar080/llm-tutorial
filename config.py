@@ -5,5 +5,5 @@ class Config(metaclass=SingletonMeta):
 
     def __init__(self) -> None:
         self.texts = ["""Hello, world.""", """This, is a test."""]
-        self.encoding = "o200k_base"
+        self.encoding = "o200k_base"  # token ID of <|endoftext|>: 199999
         self.embedding_dim = 3
