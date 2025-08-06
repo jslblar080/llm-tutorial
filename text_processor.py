@@ -6,11 +6,13 @@ from config import Config
 class TextProcessor:
 
     @staticmethod
-    def tokenize(text: str, verbose=False, id_end=False, pair=False) -> list:
+    def tokenize(texts: list[str], verbose=False, id_end=False, pair=False) -> list:
 
         bpe_tokenizer = tiktoken.get_encoding(Config().encoding)
 
-        ids = bpe_tokenizer.encode(text)
+        ids = bpe_tokenizer.encode(
+            "<|endoftext|>".join(texts), allowed_special={"<|endoftext|>"}
+        )
         bytes = [bpe_tokenizer.decode_single_token_bytes(id) for id in ids]
         tokens = [byte.decode("utf-8") for byte in bytes]
         token2id = list(zip(tokens, ids))

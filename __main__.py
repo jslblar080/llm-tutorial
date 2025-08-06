@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     text_processor = TextProcessor()
     token2id = text_processor.tokenize(
-        Config().text, verbose=True, id_end=True, pair=True
+        Config().texts, verbose=True, id_end=True, pair=True
     )
 
     embedder = Embedder()
