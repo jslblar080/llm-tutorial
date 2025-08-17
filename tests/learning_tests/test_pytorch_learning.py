@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 import pytest
 
 
@@ -21,6 +22,10 @@ class TestPytorchLearning:
     @staticmethod
     def to_classlabel(z: torch.Tensor) -> torch.Tensor:
         return torch.argmax(z, dim=1)
+
+    @staticmethod
+    def cross_entropy(softmax: torch.Tensor, y_target: torch.Tensor) -> torch.Tensor:
+        return -torch.sum(torch.log(softmax) * (y_target), dim=1)
 
     @pytest.fixture(autouse=True)
     def check_skip_remaining(self):
@@ -63,7 +68,31 @@ class TestPytorchLearning:
             accuracy >= 0.75
         ), f"Accuracy too low: {accuracy*100:.1f}% - predicted: {predicted}, true: {true_labels}"
 
-    # TODO: Update cross entropy test with Pytorch
+    def test_cross_entropy(self):
+        Z = torch.tensor(
+            [
+                [-0.3, -0.5, -0.5],
+                [-0.4, -0.1, -0.5],
+                [-0.3, -0.94, -0.5],
+                [-0.99, -0.88, -0.5],
+            ]
+        )
+        y = torch.tensor([0, 1, 2, 2])
+        xent = type(self).cross_entropy(
+            type(self).softmax(Z),
+            type(self).to_onehot(y, 3),
+        )
+        assert torch.all(xent >= 0), "Cross entropy must be non-negative"
+        assert torch.allclose(
+            F.nll_loss(torch.log(type(self).softmax(Z)), y, reduction="none"),
+            F.cross_entropy(Z, y, reduction="none"),
+        ), "PyTorch nll_loss(log(softmax)) and cross_entropy results differ"
+        assert torch.allclose(
+            xent, F.cross_entropy(Z, y, reduction="none")
+        ), "Custom cross_entropy does not match PyTorch cross_entropy"
+        assert torch.allclose(
+            torch.mean(xent), F.cross_entropy(Z, y)
+        ), "Mean of custom cross_entropy does not match PyTorch's reduced cross_entropy"
 
     def test_cuda_availability(self):
         if not torch.cuda.is_available():
