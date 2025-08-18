@@ -1,30 +1,32 @@
+import pytest
 import torch
 import torch.nn.functional as F
-import pytest
+from torch import Tensor
+from torch.autograd import grad
 
 
 class TestPytorchLearning:
     skip_remaining = False
 
     @staticmethod
-    def to_onehot(y: torch.Tensor, num_classes: int) -> torch.Tensor:
+    def to_onehot(y: Tensor, num_classes: int) -> Tensor:
         y_onehot = torch.zeros(y.size(0), num_classes)
         y_onehot.scatter_(1, y.view(-1, 1).long(), 1).float()
         return y_onehot
 
     @staticmethod
-    def softmax(z: torch.Tensor) -> torch.Tensor:
+    def softmax(z: Tensor) -> Tensor:
         # subtract max for numerical stability
         z_max, _ = torch.max(z, dim=1, keepdim=True)
         exp_z = torch.exp(z - z_max)
         return exp_z / torch.sum(exp_z, dim=1, keepdim=True)
 
     @staticmethod
-    def to_classlabel(z: torch.Tensor) -> torch.Tensor:
+    def to_classlabel(z: Tensor) -> Tensor:
         return torch.argmax(z, dim=1)
 
     @staticmethod
-    def cross_entropy(softmax: torch.Tensor, y_target: torch.Tensor) -> torch.Tensor:
+    def cross_entropy(softmax: Tensor, y_target: Tensor) -> Tensor:
         return -torch.sum(torch.log(softmax) * (y_target), dim=1)
 
     @pytest.fixture(autouse=True)
@@ -93,6 +95,38 @@ class TestPytorchLearning:
         assert torch.allclose(
             torch.mean(xent), F.cross_entropy(Z, y)
         ), "Mean of custom cross_entropy does not match PyTorch's reduced cross_entropy"
+
+    def test_backward_grad_first(self):
+        y = torch.tensor([1.0])  # target
+        x1 = torch.tensor([1.1])  # input
+        w1 = torch.tensor([2.2], requires_grad=True)  # weight
+        b = torch.tensor([0.0], requires_grad=True)  # bias
+        z = w1 * x1 + b  # net input
+        a = torch.sigmoid(z)  # output (activation)
+        loss = F.binary_cross_entropy(a, y)
+        (grad_L_w1,) = grad(loss, w1, retain_graph=True)
+        (grad_L_b,) = grad(loss, b, retain_graph=True)
+        loss.backward()
+        assert w1.grad is not None
+        assert b.grad is not None
+        assert torch.equal(grad_L_w1, w1.grad)
+        assert torch.equal(grad_L_b, b.grad)
+
+    def test_backward_backward_first(self):
+        y = torch.tensor([1.0])  # target
+        x1 = torch.tensor([1.1])  # input
+        w1 = torch.tensor([2.2], requires_grad=True)  # weight
+        b = torch.tensor([0.0], requires_grad=True)  # bias
+        z = w1 * x1 + b  # net input
+        a = torch.sigmoid(z)  # output (activation)
+        loss = F.binary_cross_entropy(a, y)
+        loss.backward(retain_graph=True)
+        (grad_L_w1,) = grad(loss, w1, retain_graph=True)
+        (grad_L_b,) = grad(loss, b)
+        assert w1.grad is not None
+        assert b.grad is not None
+        assert torch.equal(grad_L_w1, w1.grad)
+        assert torch.equal(grad_L_b, b.grad)
 
     def test_cuda_availability(self):
         if not torch.cuda.is_available():
