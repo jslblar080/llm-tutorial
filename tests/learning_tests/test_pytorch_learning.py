@@ -1,11 +1,47 @@
 import pytest
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 from torch.autograd import grad
 
 
 class TestPytorchLearning:
+
+    class NeuralNetwork(nn.Module):
+
+        def __init__(self, num_inputs: int, num_outputs: int) -> None:
+            super().__init__()
+
+            self.layers = nn.Sequential(
+                # 1st hidden layer
+                torch.nn.Linear(num_inputs, 30),
+                torch.nn.ReLU(),
+                # 2nd hidden layer
+                torch.nn.Linear(30, 20),
+                torch.nn.ReLU(),
+                # output layer
+                torch.nn.Linear(20, num_outputs),
+            )
+
+        def forward(self, x):
+            """
+            Forward method.
+
+            This is the entry point for computation when calling the model instance.
+
+            PyTorch internal flow:
+            1. `model.__call__(...)` → triggers the call.
+            2. `_wrapped_call_impl(...)` → chooses compiled call or normal.
+            3. `_call_impl(...)` → runs forward safely, handles hooks, and tracing.
+            4. `self.forward(...)` → executes the user-defined computation.
+
+            Note:
+            Do not call `forward()` directly; use `model(...)` or a wrapper method.
+            """
+            logits = self.layers(x)
+            return logits
+
     skip_remaining = False
 
     @staticmethod
@@ -127,6 +163,14 @@ class TestPytorchLearning:
         assert b.grad is not None
         assert torch.equal(grad_L_w1, w1.grad)
         assert torch.equal(grad_L_b, b.grad)
+
+    def test_module_subclass(self):
+        torch.manual_seed(123)
+        model = self.NeuralNetwork(50, 3)
+        X = torch.rand((1, 50))
+        with torch.no_grad():  # prediction without training
+            out = torch.softmax(model(X), dim=1)
+        torch.testing.assert_close(torch.sum(out), torch.ones(()))
 
     def test_cuda_availability(self):
         if not torch.cuda.is_available():
