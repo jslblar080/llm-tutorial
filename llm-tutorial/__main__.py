@@ -12,18 +12,16 @@ from text_processor import TextProcessor
 
 if __name__ == "__main__":
 
+    texts = Config().texts
+
     text_processor = TextProcessor()
     print(
         "\n",
         "".join(
-            text_processor.tokenize(
-                Config().texts, verbose=False, id_end=False, pair=False
-            )
+            text_processor.tokenize(texts, verbose=False, id_end=False, pair=False)
         ),
     )
-    token2id = text_processor.tokenize(
-        Config().texts, verbose=True, id_end=True, pair=True
-    )
+    token2id = text_processor.tokenize(texts, verbose=True, id_end=True, pair=True)
 
     embedder = Embedder()
     token_ids = [id for token, id in token2id]

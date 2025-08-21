@@ -1,14 +1,19 @@
 import tiktoken
 
+from typing import Tuple
 from config import Config
 
 
 class TextProcessor:
 
     @staticmethod
-    def tokenize(texts: list[str], verbose=False, id_end=False, pair=False) -> list:
+    def tokenize(
+        texts: Tuple[str, ...], verbose=False, id_end=False, pair=False
+    ) -> list:
 
-        bpe_tokenizer = tiktoken.get_encoding(Config().encoding)
+        encoding = Config().encoding
+
+        bpe_tokenizer = tiktoken.get_encoding(encoding)
 
         ids = bpe_tokenizer.encode(
             "<|endoftext|>".join(texts), allowed_special={"<|endoftext|>"}
