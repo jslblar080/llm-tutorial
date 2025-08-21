@@ -41,8 +41,9 @@ class TestPytorchLearning:
             """
             logits = self.layers(x)
             return logits
+            
 
-    skip_remaining = False
+    _skip_remaining = False
 
     @staticmethod
     def to_onehot(y: Tensor, num_classes: int) -> Tensor:
@@ -67,7 +68,7 @@ class TestPytorchLearning:
 
     @pytest.fixture(autouse=True)
     def check_skip_remaining(self):
-        if type(self).skip_remaining:
+        if type(self)._skip_remaining:
             pytest.skip("Skipping remaining tests because CUDA is not available")
 
     def test_torch_version(self):
@@ -174,7 +175,7 @@ class TestPytorchLearning:
 
     def test_cuda_availability(self):
         if not torch.cuda.is_available():
-            type(self).skip_remaining = True
+            type(self)._skip_remaining = True
             pytest.skip("CUDA is not available, skipping remaining tests")
 
     def test_fail(self):
