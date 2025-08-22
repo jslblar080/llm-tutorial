@@ -4,16 +4,19 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 from torch.autograd import grad
+from torch.utils.data import Dataset
 
 
 class TestPytorchLearning:
 
     class NeuralNetwork(nn.Module):
 
+        _layers: nn.Sequential
+
         def __init__(self, num_inputs: int, num_outputs: int) -> None:
             super().__init__()
 
-            self.layers = nn.Sequential(
+            self._layers = nn.Sequential(
                 # 1st hidden layer
                 torch.nn.Linear(num_inputs, 30),
                 torch.nn.ReLU(),
@@ -39,9 +42,25 @@ class TestPytorchLearning:
             Note:
             Do not call `forward()` directly; use `model(...)` or a wrapper method.
             """
-            logits = self.layers(x)
+            logits = self._layers(x)
             return logits
-            
+
+    class ToyDataset(Dataset):
+
+        _features: Tensor
+        _labels: Tensor
+
+        def __init__(self, X, y) -> None:
+            self._features = X
+            self._labels = y
+
+        def __getitem__(self, index) -> tuple[Tensor, Tensor]:
+            one_x = self._features[index]
+            one_y = self._labels[index]
+            return one_x, one_y
+
+        def __len__(self) -> int:
+            return self._labels.shape[0]
 
     _skip_remaining = False
 
@@ -172,6 +191,22 @@ class TestPytorchLearning:
         with torch.no_grad():  # prediction without training
             out = torch.softmax(model(X), dim=1)
         torch.testing.assert_close(torch.sum(out), torch.ones(()))
+
+    def test_dataset_subclass(self):
+        X_train = torch.tensor(
+            [[-1.2, 3.1], [-0.9, 2.9], [-0.5, 2.6], [2.3, -1.1], [2.7, -1.5]]
+        )
+        y_train = torch.tensor([0, 0, 0, 1, 1])
+        train_ds = self.ToyDataset(X_train, y_train)
+        for i in range(0, train_ds.__len__()):
+            torch.testing.assert_close(
+                train_ds.__getitem__(i), (X_train[i], y_train[i])
+            )
+        X_test = torch.tensor([[-0.8, 2.8], [2.6, -1.6]])
+        y_test = torch.tensor([0, 1])
+        test_ds = self.ToyDataset(X_test, y_test)
+        for i in range(0, test_ds.__len__()):
+            torch.testing.assert_close(test_ds.__getitem__(i), (X_test[i], y_test[i]))
 
     def test_cuda_availability(self):
         if not torch.cuda.is_available():
