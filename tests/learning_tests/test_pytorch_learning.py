@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 from torch.autograd import grad
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 
 
 class TestPytorchLearning:
@@ -84,6 +84,22 @@ class TestPytorchLearning:
     @staticmethod
     def cross_entropy(softmax: Tensor, y_target: Tensor) -> Tensor:
         return -torch.sum(torch.log(softmax) * (y_target), dim=1)
+
+    @staticmethod
+    def compute_accuracy(model: nn.Module, dataloader: DataLoader) -> float:
+        model.eval()
+        correct = 0
+        total_examples = 0
+        device = next(model.parameters()).device
+        with torch.no_grad():
+            for features, labels in dataloader:
+                features, labels = features.to(device), labels.to(device)
+                logits = model(features)  # forward
+                predictions = torch.argmax(logits, dim=1)
+                is_correct = (predictions == labels).sum().item()
+                correct += is_correct
+                total_examples += labels.size(0)
+        return correct / total_examples
 
     @pytest.fixture(autouse=True)
     def check_skip_remaining(self):
@@ -192,21 +208,58 @@ class TestPytorchLearning:
             out = torch.softmax(model(X), dim=1)
         torch.testing.assert_close(torch.sum(out), torch.ones(()))
 
-    def test_dataset_subclass(self):
+    def test_dataset_subclass_dataloader(self):
         X_train = torch.tensor(
             [[-1.2, 3.1], [-0.9, 2.9], [-0.5, 2.6], [2.3, -1.1], [2.7, -1.5]]
         )
         y_train = torch.tensor([0, 0, 0, 1, 1])
         train_ds = self.ToyDataset(X_train, y_train)
-        for i in range(0, train_ds.__len__()):
+        for i in range(train_ds.__len__()):
             torch.testing.assert_close(
                 train_ds.__getitem__(i), (X_train[i], y_train[i])
             )
         X_test = torch.tensor([[-0.8, 2.8], [2.6, -1.6]])
         y_test = torch.tensor([0, 1])
         test_ds = self.ToyDataset(X_test, y_test)
-        for i in range(0, test_ds.__len__()):
+        for i in range(test_ds.__len__()):
             torch.testing.assert_close(test_ds.__getitem__(i), (X_test[i], y_test[i]))
+
+        torch.manual_seed(123)
+        train_loader = DataLoader(
+            dataset=train_ds,
+            batch_size=2,
+            shuffle=True,
+            num_workers=0,
+            drop_last=True,  # batch
+        )
+        test_loader = DataLoader(
+            dataset=test_ds, batch_size=2, shuffle=False, num_workers=0
+        )
+        model = self.NeuralNetwork(
+            2, 2  # 2 input features / 2 class labels (0, 1) to predict
+        )
+        # SGD: stochastic gradient descent / lr(learning rate): tuning with loss convergence
+        optimizer = torch.optim.SGD(model.parameters(), lr=0.5)
+        num_epochs = 3  # epoch: tuning with loss convergence
+        print()
+        for epoch in range(num_epochs):
+            model.train()  # necessary for dropout or batch normalization layers
+            for batch_idx, (features, labels) in enumerate(train_loader):
+                logits = model(features)  # forward
+                loss = F.cross_entropy(logits, labels)
+                optimizer.zero_grad()  # prevent gradient accumulation from previous batch
+                loss.backward()  # compute gradients of loss with computation graph
+                optimizer.step()  # use gradients for model parameters update to minimize loss
+                print(
+                    f"Epoch: {epoch+1:03d}/{num_epochs:03d}"
+                    f" | Batch {batch_idx:03d}/{len(train_loader):03d}"
+                    f" | Train/Val Loss: {loss:.2f}"
+                )
+            model.eval()  # necessary for dropout or batch normalization layers
+        torch.testing.assert_close(
+            type(self).compute_accuracy(model, train_loader), 1.0
+        )
+        torch.testing.assert_close(type(self).compute_accuracy(model, test_loader), 1.0)
 
     def test_cuda_availability(self):
         if not torch.cuda.is_available():
