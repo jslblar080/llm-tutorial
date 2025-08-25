@@ -2,6 +2,7 @@ import pytest
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 from torch import Tensor
 from torch.autograd import grad
 from torch.utils.data import Dataset, DataLoader
@@ -50,11 +51,11 @@ class TestPytorchLearning:
         _features: Tensor
         _labels: Tensor
 
-        def __init__(self, X, y) -> None:
+        def __init__(self, X: Tensor, y: Tensor) -> None:
             self._features = X
             self._labels = y
 
-        def __getitem__(self, index) -> tuple[Tensor, Tensor]:
+        def __getitem__(self, index: int) -> tuple[Tensor, Tensor]:
             one_x = self._features[index]
             one_y = self._labels[index]
             return one_x, one_y

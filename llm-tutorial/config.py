@@ -9,7 +9,10 @@ class Config(metaclass=SingletonMeta):
     _embedding_dim: int
 
     def __init__(self) -> None:
-        self._texts = ("Hello, world.", "This, is a test.")
+        self._texts = (
+            "In the heart of the city stood the old library, a relic from a bygone era.",
+            "Its stone walls bore the marks of time, and ivy clung tightly to its facade.",
+        )
         self._encoding = "o200k_base"  # token ID of <|endoftext|>: 199999
         self._embedding_dim = 3
 

@@ -5,7 +5,11 @@
 # source .venv/bin/activate
 # uv pip install -r requirements.txt
 
+import torch
+
+from torch.utils.data import DataLoader
 from config import Config
+from dataset.gpt_dataset_v1 import GPTDatasetV1
 from embedder import Embedder
 from text_processor import TextProcessor
 
@@ -21,10 +25,25 @@ if __name__ == "__main__":
             text_processor.tokenize(texts, verbose=False, id_end=False, pair=False)
         ),
     )
+
     token2id = text_processor.tokenize(texts, verbose=True, id_end=True, pair=True)
 
-    embedder = Embedder()
     token_ids = [id for token, id in token2id]
-    embedder.to_vector(token_ids)
 
-    # TODO: Data sampling with a sliding window
+    torch.manual_seed(123)
+    dataloader = DataLoader(
+        dataset=GPTDatasetV1(token_ids, max_length=3, stride=3),
+        batch_size=3,
+        shuffle=True,
+        num_workers=0,
+        drop_last=True,
+    )
+    data_iter = iter(dataloader)
+    inputs, targets = next(data_iter)
+    print("\nInputs:\n", inputs)
+    print("\nTargets:\n", targets)
+
+    embedder = Embedder()
+    embedder.to_vector(inputs)
+
+    # TODO: Converting token IDs into embedding vectors

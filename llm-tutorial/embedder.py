@@ -7,7 +7,7 @@ from config import Config
 class Embedder:
 
     @staticmethod
-    def to_vector(token_ids: list) -> None:
+    def to_vector(token_ids: list[int]) -> None:
 
         embedding_dim = Config().embedding_dim
 
