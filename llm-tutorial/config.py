@@ -1,10 +1,12 @@
 from typing import Tuple
+from dataset.gpt_dataset_v1 import BaseDataset, GPTDatasetV1
 from util.singleton_meta import SingletonMeta
 
 
 class Config(metaclass=SingletonMeta):
 
     _texts: Tuple[str, ...]
+    _dataset: BaseDataset
     _encoding: str
     _embedding_dim: int
 
@@ -21,9 +23,17 @@ class Config(metaclass=SingletonMeta):
         return self._texts
 
     @property
+    def dataset(self):
+        return self._dataset
+
+    @property
     def encoding(self):
         return self._encoding
 
     @property
     def embedding_dim(self):
         return self._embedding_dim
+
+    @dataset.setter
+    def dataset(self, token_ids: list[int]):
+        self._dataset = GPTDatasetV1(token_ids, max_length=3, stride=3)

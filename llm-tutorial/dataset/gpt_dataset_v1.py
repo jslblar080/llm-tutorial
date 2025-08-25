@@ -1,10 +1,10 @@
 import torch
 
+from base_dataset import BaseDataset
 from torch import Tensor
-from torch.utils.data import Dataset
 
 
-class GPTDatasetV1(Dataset):
+class GPTDatasetV1(BaseDataset):
 
     _input_ids = []
     _target_ids = []

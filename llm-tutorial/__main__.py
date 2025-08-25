@@ -9,7 +9,6 @@ import torch
 
 from torch.utils.data import DataLoader
 from config import Config
-from dataset.gpt_dataset_v1 import GPTDatasetV1
 from embedder import Embedder
 from text_processor import TextProcessor
 
@@ -31,8 +30,10 @@ if __name__ == "__main__":
     token_ids = [id for token, id in token2id]
 
     torch.manual_seed(123)
+    Config().dataset = token_ids
+    dataset = Config().dataset
     dataloader = DataLoader(
-        dataset=GPTDatasetV1(token_ids, max_length=3, stride=3),
+        dataset=dataset,
         batch_size=3,
         shuffle=True,
         num_workers=0,
