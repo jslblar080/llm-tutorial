@@ -44,7 +44,5 @@ if __name__ == "__main__":
     print("\nInputs:\n", inputs)
     print("\nTargets:\n", targets)
 
-    embedder = Embedder()
-    embedder.to_vector(inputs)
-
     # TODO: Converting token IDs into embedding vectors
+    # TODO: Adding positional embeddings
