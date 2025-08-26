@@ -45,9 +45,5 @@ if __name__ == "__main__":
     print("\nTargets:\n", targets)
 
     embedder = Embedder()
-    token_embedding_layer = embedder.token_layer()
-    token_embeddings = token_embedding_layer(inputs)
-    print("\nSize of token embeddings:", token_embeddings.shape, "\n")
-
-    # TODO: Converting token IDs into embedding vectors
-    # TODO: Adding positional embeddings
+    input_embeddings = embedder.input_embeddings(inputs)
+    print("\nSize of input embeddings:", input_embeddings.shape, "\n")

@@ -6,6 +6,7 @@ from util.singleton_meta import SingletonMeta
 class Config(metaclass=SingletonMeta):
 
     _texts: Tuple[str, ...]
+    _context_length: int
     _dataset: BaseDataset
     _encoding: str
     _num_embeddings: int
@@ -16,6 +17,7 @@ class Config(metaclass=SingletonMeta):
             "In the heart of the city stood the old library, a relic from a bygone era.",
             "Its stone walls bore the marks of time, and ivy clung tightly to its facade.",
         )
+        self._context_length = 3
         self._encoding = "o200k_base"  # token ID of <|endoftext|>: 199999
         self._num_embeddings = (
             200000  # TODO: Update automatically according to _encoding
@@ -25,6 +27,10 @@ class Config(metaclass=SingletonMeta):
     @property
     def texts(self):
         return self._texts
+
+    @property
+    def context_length(self):
+        return self._context_length
 
     @property
     def dataset(self):
@@ -44,4 +50,6 @@ class Config(metaclass=SingletonMeta):
 
     @dataset.setter
     def dataset(self, token_ids: list[int]):
-        self._dataset = GPTDatasetV1(token_ids, max_length=3, stride=3)
+        self._dataset = GPTDatasetV1(
+            token_ids, max_length=self._context_length, stride=self._context_length
+        )
