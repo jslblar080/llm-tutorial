@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 
 from config import Config
@@ -7,11 +6,14 @@ from config import Config
 class Embedder:
 
     @staticmethod
-    def to_layer(token_ids: list[int]) -> nn.Embedding:
+    def token_layer() -> nn.Embedding:
 
+        num_embeddings = Config().num_embeddings
         embedding_dim = Config().embedding_dim
 
-        embedding_layer = nn.Embedding(len(token_ids), embedding_dim)
-        print("\nWeight matrix of embedding layer:\n", embedding_layer.weight)
+        token_embedding_layer = nn.Embedding(num_embeddings, embedding_dim)
+        print(
+            "\nWeight matrix of token embedding layer:\n", token_embedding_layer.weight
+        )
 
-        return embedding_layer
+        return token_embedding_layer

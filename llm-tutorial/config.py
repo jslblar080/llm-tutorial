@@ -8,6 +8,7 @@ class Config(metaclass=SingletonMeta):
     _texts: Tuple[str, ...]
     _dataset: BaseDataset
     _encoding: str
+    _num_embeddings: int
     _embedding_dim: int
 
     def __init__(self) -> None:
@@ -16,7 +17,10 @@ class Config(metaclass=SingletonMeta):
             "Its stone walls bore the marks of time, and ivy clung tightly to its facade.",
         )
         self._encoding = "o200k_base"  # token ID of <|endoftext|>: 199999
-        self._embedding_dim = 3
+        self._num_embeddings = (
+            200000  # TODO: Update automatically according to _encoding
+        )
+        self._embedding_dim = 256
 
     @property
     def texts(self):
@@ -29,6 +33,10 @@ class Config(metaclass=SingletonMeta):
     @property
     def encoding(self):
         return self._encoding
+
+    @property
+    def num_embeddings(self):
+        return self._num_embeddings
 
     @property
     def embedding_dim(self):
