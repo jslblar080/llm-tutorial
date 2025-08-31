@@ -5,6 +5,62 @@ import torch.nn as nn
 
 class TestAttentionLearning:
 
+    class SimplifiedSelfAttention(nn.Module):
+
+        def __init__(self) -> None:
+            super().__init__()
+
+        def forward(self, x):
+            attn_scores = torch.empty(x.shape[0], x.shape[0])
+            attn_scores = x @ x.T
+            attn_weights = torch.softmax(attn_scores, dim=-1)
+            all_context_vecs = attn_weights @ x
+            return all_context_vecs
+
+    class SelfAttentionParameter(nn.Module):
+
+        _W_query: nn.Parameter
+        _W_key: nn.Parameter
+        _W_value: nn.Parameter
+
+        def __init__(self, d_in: int, d_out: int, seed_num: int):
+            super().__init__()
+            torch.manual_seed(seed_num)
+            self._W_query = nn.Parameter(torch.rand(d_in, d_out))
+            self._W_key = nn.Parameter(torch.rand(d_in, d_out))
+            self._W_value = nn.Parameter(torch.rand(d_in, d_out))
+
+        def forward(self, x):
+            queries = x @ self._W_query
+            keys = x @ self._W_key
+            values = x @ self._W_value
+            attn_scores = queries @ keys.T
+            attn_weights = torch.softmax(attn_scores / keys.shape[-1] ** 0.5, dim=-1)
+            all_context_vecs = attn_weights @ values
+            return all_context_vecs
+
+    class SelfAttentionLinear(nn.Module):
+
+        _W_query: nn.Linear
+        _W_key: nn.Linear
+        _W_value: nn.Linear
+
+        def __init__(self, d_in: int, d_out: int, seed_num: int, qkv_bias=False):
+            super().__init__()
+            torch.manual_seed(seed_num)
+            self._W_query = nn.Linear(d_in, d_out, bias=qkv_bias)
+            self._W_key = nn.Linear(d_in, d_out, bias=qkv_bias)
+            self._W_value = nn.Linear(d_in, d_out, bias=qkv_bias)
+
+        def forward(self, x):
+            queries = self._W_query(x)
+            keys = self._W_key(x)
+            values = self._W_value(x)
+            attn_scores = queries @ keys.T
+            attn_weights = torch.softmax(attn_scores / keys.shape[-1] ** 0.5, dim=-1)
+            all_context_vecs = attn_weights @ values
+            return all_context_vecs
+
     _inputs = torch.tensor(
         [
             [0.43, 0.15, 0.89],  # x_0
@@ -16,9 +72,11 @@ class TestAttentionLearning:
         ]
     )
 
+    _seed_num = 123
+
     @pytest.fixture(autouse=True)
     def keep_manual_seed(self):
-        torch.manual_seed(123)
+        torch.manual_seed(self._seed_num)
 
     def test_simplified_self_attention(self):
         attn_scores = torch.empty(self._inputs.shape[0], self._inputs.shape[0])
@@ -35,6 +93,8 @@ class TestAttentionLearning:
             torch.testing.assert_close(sum.item(), 1.0)
         all_context_vecs = attn_weights @ self._inputs
         print("All context vectors:\n", all_context_vecs)
+        ssa = self.SimplifiedSelfAttention()
+        torch.testing.assert_close(all_context_vecs, ssa(self._inputs))
 
     def test_self_attention_nn_parameter(self):
         d_in = self._inputs.shape[1]
@@ -54,6 +114,10 @@ class TestAttentionLearning:
             torch.testing.assert_close(sum.item(), 1.0)
         all_context_vecs = attn_weights @ values
         print("All context vectors:\n", all_context_vecs)
+        sap = self.SelfAttentionParameter(
+            self._inputs.shape[1], self._inputs.shape[1], self._seed_num
+        )
+        torch.testing.assert_close(all_context_vecs, sap(self._inputs))
 
     def test_self_attention_nn_linear(self):
         d_in = self._inputs.shape[1]
@@ -74,3 +138,7 @@ class TestAttentionLearning:
             torch.testing.assert_close(sum.item(), 1.0)
         all_context_vecs = attn_weights @ values
         print("All context vectors:\n", all_context_vecs)
+        sal = self.SelfAttentionLinear(
+            self._inputs.shape[1], self._inputs.shape[1], self._seed_num
+        )
+        torch.testing.assert_close(all_context_vecs, sal(self._inputs))
