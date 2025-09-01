@@ -30,6 +30,15 @@ class TestAttentionLearning:
             self._W_key = nn.Parameter(torch.rand(d_in, d_out))
             self._W_value = nn.Parameter(torch.rand(d_in, d_out))
 
+        def set_W_query(self, new_W_query: nn.Parameter) -> None:
+            self._W_query = new_W_query
+
+        def set_W_key(self, new_W_key: nn.Parameter) -> None:
+            self._W_key = new_W_key
+
+        def set_W_value(self, new_W_value: nn.Parameter) -> None:
+            self._W_value = new_W_value
+
         def forward(self, x):
             queries = x @ self._W_query
             keys = x @ self._W_key
@@ -51,6 +60,18 @@ class TestAttentionLearning:
             self._W_query = nn.Linear(d_in, d_out, bias=qkv_bias)
             self._W_key = nn.Linear(d_in, d_out, bias=qkv_bias)
             self._W_value = nn.Linear(d_in, d_out, bias=qkv_bias)
+
+        @property
+        def W_query(self):
+            return self._W_query
+
+        @property
+        def W_key(self):
+            return self._W_key
+
+        @property
+        def W_value(self):
+            return self._W_value
 
         def forward(self, x):
             queries = self._W_query(x)
@@ -142,3 +163,10 @@ class TestAttentionLearning:
             self._inputs.shape[1], self._inputs.shape[1], self._seed_num
         )
         torch.testing.assert_close(all_context_vecs, sal(self._inputs))
+        sap = self.SelfAttentionParameter(
+            self._inputs.shape[1], self._inputs.shape[1], self._seed_num
+        )
+        sap.set_W_query(nn.Parameter(sal.W_query.weight.T))
+        sap.set_W_key(nn.Parameter(sal.W_key.weight.T))
+        sap.set_W_value(nn.Parameter(sal.W_value.weight.T))
+        torch.testing.assert_close(sal(self._inputs), sap(self._inputs))
