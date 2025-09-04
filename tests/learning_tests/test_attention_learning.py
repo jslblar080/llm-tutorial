@@ -2,6 +2,8 @@ import pytest
 import torch
 import torch.nn as nn
 
+from torch import Tensor
+
 
 class TestAttentionLearning:
 
@@ -82,14 +84,63 @@ class TestAttentionLearning:
             all_context_vecs = attn_weights @ values
             return all_context_vecs
 
-    _inputs = torch.tensor(
+    class CausalAttention(nn.Module):
+
+        _W_query: nn.Linear
+        _W_key: nn.Linear
+        _W_value: nn.Linear
+        _dropout: nn.Dropout
+        _mask: Tensor
+
+        def __init__(
+            self,
+            d_in: int,
+            d_out: int,
+            cxt_len: int,
+            dr: float,
+            seed_num: int,
+            qkv_bias=False,
+        ):
+            super().__init__()
+            torch.manual_seed(seed_num)
+            self._W_query = nn.Linear(d_in, d_out, bias=qkv_bias)
+            self._W_key = nn.Linear(d_in, d_out, bias=qkv_bias)
+            self._W_value = nn.Linear(d_in, d_out, bias=qkv_bias)
+            self._dropout = nn.Dropout(dr)
+            # buffers automatically move to appropriate device (CPU or GPU)
+            self.register_buffer(
+                "_mask", torch.triu(torch.ones(cxt_len, cxt_len), diagonal=1)
+            )
+
+        def forward(self, x):
+            batch_size, cxt_len, d_in = x.shape
+            queries = self._W_query(x)
+            keys = self._W_key(x)
+            values = self._W_value(x)
+            attn_scores: Tensor = queries @ keys.transpose(
+                1, 2  # 0: batch_size, 1: cxt_len, 2: d_out
+            )
+            attn_scores.masked_fill_(self._mask.bool(), -torch.inf)
+            attn_weights = torch.softmax(attn_scores / keys.shape[-1] ** 0.5, dim=-1)
+            attn_weights = self._dropout(attn_weights)
+            all_context_vecs = attn_weights @ values
+            return all_context_vecs
+
+    _arr = [
+        [0.43, 0.15, 0.89],  # x_0
+        [0.55, 0.87, 0.66],  # x_1
+        [0.57, 0.85, 0.64],  # x_2
+        [0.22, 0.58, 0.33],  # x_3
+        [0.77, 0.25, 0.10],  # x_4
+        [0.05, 0.80, 0.55],  # x_5
+    ]
+
+    _inputs = torch.tensor(_arr)
+
+    _batch = torch.tensor(
         [
-            [0.43, 0.15, 0.89],  # x_0
-            [0.55, 0.87, 0.66],  # x_1
-            [0.57, 0.85, 0.64],  # x_2
-            [0.22, 0.58, 0.33],  # x_3
-            [0.77, 0.25, 0.10],  # x_4
-            [0.05, 0.80, 0.55],  # x_5
+            _arr,
+            _arr,
         ]
     )
 
@@ -170,3 +221,14 @@ class TestAttentionLearning:
         sap.set_W_key(nn.Parameter(sal.W_key.weight.T))
         sap.set_W_value(nn.Parameter(sal.W_value.weight.T))
         torch.testing.assert_close(sal(self._inputs), sap(self._inputs))
+
+    def test_causal_attention(self):
+        d_in = self._batch.shape[2]
+        d_out = self._batch.shape[2]
+        cxt_len = self._batch.shape[1]
+        ca = self.CausalAttention(d_in, d_out, cxt_len, 0.0, self._seed_num)
+        all_context_vecs = ca(self._batch)
+        print("\nall_context_vecs.shape:", all_context_vecs.shape)
+        sal = self.SelfAttentionLinear(d_in, d_out, self._seed_num)
+        # no masking on last row
+        torch.testing.assert_close(all_context_vecs[0][-1], sal(self._inputs)[-1])
