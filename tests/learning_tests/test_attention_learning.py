@@ -230,5 +230,5 @@ class TestAttentionLearning:
         all_context_vecs = ca(self._batch)
         print("\nall_context_vecs.shape:", all_context_vecs.shape)
         sal = self.SelfAttentionLinear(d_in, d_out, self._seed_num)
-        # no masking on last row
+        # no masking on last row with dropout rate 0.0
         torch.testing.assert_close(all_context_vecs[0][-1], sal(self._inputs)[-1])
