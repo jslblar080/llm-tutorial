@@ -30,6 +30,7 @@ if __name__ == "__main__":
     token_ids = [id for token, id in token2id]
 
     torch.manual_seed(123)
+
     Config().dataset = token_ids
     dataset = Config().dataset
     dataloader = DataLoader(
@@ -46,4 +47,9 @@ if __name__ == "__main__":
 
     embedder = Embedder()
     input_embeddings = embedder.input_embeddings(inputs)
-    print("\nSize of input embeddings:", input_embeddings.shape, "\n")
+    print("\nSize of input embeddings:", input_embeddings.shape)
+
+    Config().attention = input_embeddings
+    attention = Config().attention
+    context_vector_embeddings = attention(input_embeddings)
+    print("\nSize of context vector embeddings:", context_vector_embeddings.shape)

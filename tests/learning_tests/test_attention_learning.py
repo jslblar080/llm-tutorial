@@ -146,7 +146,7 @@ class TestAttentionLearning:
             n_head: int,
             seed_num: int,
             qkv_bias=False,
-            out_proj=False,
+            out_proj=True,
         ):
             super().__init__()
             torch.manual_seed(seed_num)
@@ -311,6 +311,8 @@ class TestAttentionLearning:
         cxt_len = self._batch.shape[1]
         dr = 0.0
         n_head = 1
-        sha = self.MultiHeadAttention(d_in, d_out, cxt_len, dr, n_head, self._seed_num)
+        sha = self.MultiHeadAttention(
+            d_in, d_out, cxt_len, dr, n_head, self._seed_num, out_proj=False
+        )
         ca = self.CausalAttention(d_in, d_out, cxt_len, dr, self._seed_num)
         torch.testing.assert_close(sha(self._batch), ca(self._batch))
