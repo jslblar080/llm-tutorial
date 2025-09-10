@@ -8,11 +8,12 @@
 import torch
 
 from torch.utils.data import DataLoader
-from config import Config
-from embedder import Embedder
-from text_processor import TextProcessor
+from .config import Config
+from .embedder import Embedder
+from .text_processor import TextProcessor
 
 
+# python -m llmtutorial
 if __name__ == "__main__":
 
     texts = Config().texts

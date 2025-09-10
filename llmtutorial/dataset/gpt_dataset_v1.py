@@ -1,7 +1,7 @@
 import torch
 
 from torch import Tensor
-from base_dataset import BaseDataset
+from ..base_dataset import BaseDataset
 
 
 class GPTDatasetV1(BaseDataset):

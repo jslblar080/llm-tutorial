@@ -1,6 +1,6 @@
 import torch
 
-from base_attention import BaseAttention
+from ..base_attention import BaseAttention
 
 
 class SimplifiedSelfAttention(BaseAttention):

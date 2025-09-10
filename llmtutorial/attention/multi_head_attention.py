@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from torch import Tensor
-from base_attention import BaseAttention
+from ..base_attention import BaseAttention
 
 
 class MultiHeadAttention(BaseAttention):

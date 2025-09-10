@@ -1,7 +1,7 @@
 import tiktoken
 
 from typing import Tuple
-from config import Config
+from .config import Config
 
 
 class TextProcessor:

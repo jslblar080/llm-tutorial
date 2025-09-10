@@ -1,13 +1,13 @@
 from torch import Tensor
 from typing import Tuple
-from attention.causal_attention import CausalAttention
-from attention.multi_head_attention import MultiHeadAttention
-from attention.self_attention import SelfAttention
-from attention.simplified_self_attention import SimplifiedSelfAttention
-from base_attention import BaseAttention
-from base_dataset import BaseDataset
-from dataset.gpt_dataset_v1 import GPTDatasetV1
-from util.singleton_meta import SingletonMeta
+from .attention.causal_attention import CausalAttention
+from .attention.multi_head_attention import MultiHeadAttention
+from .attention.self_attention import SelfAttention
+from .attention.simplified_self_attention import SimplifiedSelfAttention
+from .base_attention import BaseAttention
+from .base_dataset import BaseDataset
+from .dataset.gpt_dataset_v1 import GPTDatasetV1
+from .util.singleton_meta import SingletonMeta
 
 
 class Config(metaclass=SingletonMeta):
@@ -18,6 +18,8 @@ class Config(metaclass=SingletonMeta):
     _encoding: str
     _num_embeddings: int
     _embedding_dim: int
+    _drop_rate: float
+    _num_trf_blocks: int
     _attention: BaseAttention
 
     def __init__(self) -> None:
@@ -31,6 +33,8 @@ class Config(metaclass=SingletonMeta):
             200000  # TODO: Update automatically according to _encoding
         )
         self._embedding_dim = 256
+        self._drop_rate = 0.1
+        self._num_trf_blocks = 12
 
     @property
     def texts(self):
@@ -55,6 +59,14 @@ class Config(metaclass=SingletonMeta):
     @property
     def embedding_dim(self):
         return self._embedding_dim
+
+    @property
+    def drop_rate(self):
+        return self._drop_rate
+
+    @property
+    def num_trf_blocks(self):
+        return self._num_trf_blocks
 
     @property
     def attention(self):

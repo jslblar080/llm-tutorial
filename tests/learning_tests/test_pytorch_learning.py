@@ -8,6 +8,7 @@ from torch.autograd import grad
 from torch.utils.data import Dataset, DataLoader
 
 
+# pytest -sv tests/learning_tests/test_pytorch_learning.py
 class TestPytorchLearning:
 
     class NeuralNetwork(nn.Module):
