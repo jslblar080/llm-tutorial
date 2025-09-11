@@ -3,7 +3,7 @@ import torch.nn as nn
 
 class BaseLayerNorm(nn.Module):
 
-    def __init__(self, normalized_shape: int) -> None:
+    def __init__(self, embedding_dim: int) -> None:
         super().__init__()
 
     def forward(self, x):
