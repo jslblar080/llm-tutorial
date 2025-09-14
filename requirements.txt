@@ -2,3 +2,4 @@ numpy >= 1.26, < 2.1
 torch >= 2.3.0
 tiktoken >= 0.5.1
 pytest >= 8.1.1
+matplotlib >= 3.7.1
