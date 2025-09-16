@@ -4,8 +4,7 @@ import torch.nn as nn
 from ..base_gpt_model import BaseGPTModel
 from ..base_layer_norm import BaseLayerNorm
 from ..config import Config
-from ..layer_norm.dummy_layer_norm import DummyLayerNorm
-from ..transformer_block.dummy_transformer_block import DummyTransformerBlock
+from .gpt_model_config import GPTModelConfig
 
 
 class DummyGPTModel(BaseGPTModel):
@@ -30,9 +29,13 @@ class DummyGPTModel(BaseGPTModel):
         )
         self._dropout = nn.Dropout(config.drop_rate)
         self._trf_blocks = nn.Sequential(
-            *[DummyTransformerBlock() for _ in range(config.num_trf_blocks)]
+            *[
+                GPTModelConfig().dummy_gpt_model_trf_block
+                for _ in range(config.num_trf_blocks)
+            ]
         )
-        self._final_layer_norm = DummyLayerNorm(config.embedding_dim)
+        GPTModelConfig().dummy_gpt_model_final_layer_norm = config.embedding_dim
+        self._final_layer_norm = GPTModelConfig().dummy_gpt_model_final_layer_norm
         self._output_head = nn.Linear(
             config.embedding_dim,
             config.num_embeddings,
