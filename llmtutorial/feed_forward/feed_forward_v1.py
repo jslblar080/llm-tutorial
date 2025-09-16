@@ -10,9 +10,13 @@ class FeedForwardV1(BaseFeedForward):
     def __init__(self, embedding_dim: int, activation_function: nn.Module) -> None:
         super().__init__(embedding_dim)
         self._layers = nn.Sequential(
-            nn.Linear(embedding_dim, 4 * embedding_dim),
+            nn.Linear(
+                embedding_dim, 4 * embedding_dim
+            ),  # increase embedding dimension four times
             activation_function,
-            nn.Linear(4 * embedding_dim, embedding_dim),
+            nn.Linear(
+                4 * embedding_dim, embedding_dim
+            ),  # decrease embedding dimension four times
         )
 
     def forward(self, x):
