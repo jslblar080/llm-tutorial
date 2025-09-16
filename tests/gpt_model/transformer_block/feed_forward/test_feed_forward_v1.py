@@ -1,10 +1,12 @@
 import torch
 import torch.nn as nn
 
-from llmtutorial.feed_forward.feed_forward_v1 import FeedForwardV1
+from llmtutorial.gpt_model.transformer_block.feed_forward.feed_forward_v1 import (
+    FeedForwardV1,
+)
 
 
-# pytest -sv tests/feed_forward/test_feed_forward_v1.py
+# pytest -sv tests/gpt_model/transformer_block/feed_forward/test_feed_forward_v1.py
 class TestFeedForwardV1:
 
     _seed_num = 123

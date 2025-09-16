@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from ..base_gpt_model import BaseGPTModel
-from ..base_layer_norm import BaseLayerNorm
+from .base_layer_norm import BaseLayerNorm
 from ..config import Config
 from .gpt_model_config import GPTModelConfig
 

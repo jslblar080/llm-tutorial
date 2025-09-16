@@ -3,10 +3,10 @@ import os
 import torch
 import torch.nn as nn
 
-from llmtutorial.feed_forward.activation_function.GELU_approx import GELUApprox
+from llmtutorial.gpt_model.transformer_block.feed_forward.activation_function.GELU_approx import GELUApprox
 
 
-# pytest -sv tests/feed_forward/activation_function/test_GELU_approx.py
+# pytest -sv tests/gpt_model/transformer_block/feed_forward/activation_function/test_GELU_approx.py
 class TestGELUApprox:
 
     def test_gelu_approx_vs_relu(self):

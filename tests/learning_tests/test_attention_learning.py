@@ -5,7 +5,7 @@ import torch.nn as nn
 from torch import Tensor
 
 
-#pytest -sv tests/learning_tests/test_attention_learning.py
+# pytest -sv tests/learning_tests/test_attention_learning.py
 class TestAttentionLearning:
 
     class SimplifiedSelfAttention(nn.Module):

@@ -1,12 +1,16 @@
 from torch import Tensor
 from typing import Tuple
-from .attention.causal_attention import CausalAttention
-from .attention.multi_head_attention import MultiHeadAttention
-from .attention.self_attention import SelfAttention
-from .attention.simplified_self_attention import SimplifiedSelfAttention
-from .base_attention import BaseAttention
 from .base_dataset import BaseDataset
 from .dataset.gpt_dataset_v1 import GPTDatasetV1
+from .gpt_model.transformer_block.attention.causal_attention import CausalAttention
+from .gpt_model.transformer_block.attention.multi_head_attention import (
+    MultiHeadAttention,
+)
+from .gpt_model.transformer_block.attention.self_attention import SelfAttention
+from .gpt_model.transformer_block.attention.simplified_self_attention import (
+    SimplifiedSelfAttention,
+)
+from .gpt_model.transformer_block.base_attention import BaseAttention
 from .util.singleton_meta import SingletonMeta
 
 

@@ -2,10 +2,10 @@ import pytest
 import torch
 
 from torch import Tensor
-from llmtutorial.layer_norm.layer_norm_v1 import LayerNormV1
+from llmtutorial.gpt_model.layer_norm.layer_norm_v1 import LayerNormV1
 
 
-# pytest -sv tests/test_layer_norm_v1.py
+# pytest -sv tests/gpt_model/layer_norm/test_layer_norm_v1.py
 class TestLayerNormV1:
 
     _seed_num = 123

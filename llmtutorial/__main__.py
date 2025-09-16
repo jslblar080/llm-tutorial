@@ -9,7 +9,7 @@ import torch
 
 from torch.utils.data import DataLoader
 from .config import Config
-from .embedder import Embedder
+from .gpt_model.embedder import Embedder  # TODO: import from gpt_model
 from .text_processor import TextProcessor
 
 

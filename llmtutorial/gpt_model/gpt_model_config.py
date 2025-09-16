@@ -1,7 +1,7 @@
-from ..base_layer_norm import BaseLayerNorm
-from ..base_transformer_block import BaseTransformerBlock
-from ..layer_norm.dummy_layer_norm import DummyLayerNorm
-from ..transformer_block.dummy_transformer_block import DummyTransformerBlock
+from .base_layer_norm import BaseLayerNorm
+from .base_transformer_block import BaseTransformerBlock
+from .layer_norm.dummy_layer_norm import DummyLayerNorm
+from .transformer_block.dummy_transformer_block import DummyTransformerBlock
 from ..util.singleton_meta import SingletonMeta
 
 
