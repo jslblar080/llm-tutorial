@@ -13,9 +13,9 @@ class Embedder:
         token_embedding_layer = nn.Embedding(
             Config().num_embeddings, Config().embedding_dim
         )
-        print(
-            "\nWeight matrix of token embedding layer:\n", token_embedding_layer.weight
-        )
+        # print(
+        #     "\nWeight matrix of token embedding layer:\n", token_embedding_layer.weight
+        # )
 
         return token_embedding_layer
 
@@ -35,6 +35,8 @@ class Embedder:
         token_embeddings = token_embedding_layer(inputs)
 
         pos_embedding_layer = cls._pos_layer()
-        pos_embeddings = pos_embedding_layer(torch.arange(Config().context_length))
+        pos_embeddings = pos_embedding_layer(
+            torch.arange(Config().context_length, device=inputs.device)
+        )
 
         return token_embeddings + pos_embeddings
