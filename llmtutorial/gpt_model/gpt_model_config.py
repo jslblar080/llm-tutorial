@@ -2,6 +2,7 @@ from torch import Tensor
 from .base_layer_norm import BaseLayerNorm
 from .base_transformer_block import BaseTransformerBlock
 from .layer_norm.dummy_layer_norm import DummyLayerNorm
+from .layer_norm.layer_norm_v1 import LayerNormV1
 from .transformer_block.attention.causal_attention import CausalAttention
 from .transformer_block.attention.multi_head_attention import (
     MultiHeadAttention,
@@ -11,7 +12,10 @@ from .transformer_block.attention.simplified_self_attention import (
     SimplifiedSelfAttention,
 )
 from .transformer_block.base_attention import BaseAttention
+from .transformer_block.base_feed_forward import BaseFeedForward
 from .transformer_block.dummy_transformer_block import DummyTransformerBlock
+from .transformer_block.feed_forward.activation_function.GELU_approx import GELUApprox
+from .transformer_block.feed_forward.feed_forward_v1 import FeedForwardV1
 from ..util.singleton_meta import SingletonMeta
 
 
@@ -23,6 +27,8 @@ class GPTModelConfig(metaclass=SingletonMeta):
     _num_trf_blocks: int
     _attention: BaseAttention
 
+    _transformer_block_v1_layer_norm: BaseLayerNorm
+    _transformer_block_v1_feed_forward: BaseFeedForward
     _dummy_gpt_model_final_layer_norm: BaseLayerNorm
     _dummy_gpt_model_trf_block: BaseTransformerBlock
 
@@ -30,10 +36,14 @@ class GPTModelConfig(metaclass=SingletonMeta):
         self._num_embeddings = (
             200000  # TODO: Update automatically according to Config().encoding
         )
-        self._embedding_dim = 256
+        self._embedding_dim = 64 * 4
         self._drop_rate = 0.1
         self._num_trf_blocks = 12
 
+        self._transformer_block_v1_layer_norm = LayerNormV1(self._embedding_dim)
+        self._transformer_block_v1_feed_forward = FeedForwardV1(
+            self._embedding_dim, GELUApprox()
+        )
         self._dummy_gpt_model_trf_block = DummyTransformerBlock()
 
     @property
@@ -55,6 +65,10 @@ class GPTModelConfig(metaclass=SingletonMeta):
     @property
     def attention(self):
         return self._attention
+
+    @property
+    def transformer_block_v1_layer_norm(self):
+        return self._transformer_block_v1_layer_norm
 
     @property
     def dummy_gpt_model_final_layer_norm(self):

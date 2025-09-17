@@ -19,7 +19,7 @@ class DummyGPTModel(BaseGPTModel):
         self._dropout = nn.Dropout(gpt_model_config.drop_rate)
         self._trf_blocks = nn.Sequential(
             *[
-                GPTModelConfig().dummy_gpt_model_trf_block
+                gpt_model_config.dummy_gpt_model_trf_block
                 for _ in range(gpt_model_config.num_trf_blocks)
             ]
         )
