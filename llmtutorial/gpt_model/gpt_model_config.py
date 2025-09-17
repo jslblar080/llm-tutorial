@@ -44,6 +44,7 @@ class GPTModelConfig(metaclass=SingletonMeta):
         self._transformer_block_v1_feed_forward = FeedForwardV1(
             self._embedding_dim, GELUApprox()
         )
+        self._dummy_gpt_model_final_layer_norm = DummyLayerNorm(self._embedding_dim)
         self._dummy_gpt_model_trf_block = DummyTransformerBlock()
 
     @property
@@ -71,6 +72,10 @@ class GPTModelConfig(metaclass=SingletonMeta):
         return self._transformer_block_v1_layer_norm
 
     @property
+    def transformer_block_v1_feed_forward(self):
+        return self._transformer_block_v1_feed_forward
+
+    @property
     def dummy_gpt_model_final_layer_norm(self):
         return self._dummy_gpt_model_final_layer_norm
 
@@ -89,7 +94,3 @@ class GPTModelConfig(metaclass=SingletonMeta):
             0.1,
             self._embedding_dim // 64,
         )
-
-    @dummy_gpt_model_final_layer_norm.setter
-    def dummy_gpt_model_final_layer_norm(self, embedding_dim: int):
-        self._dummy_gpt_model_final_layer_norm = DummyLayerNorm(embedding_dim)

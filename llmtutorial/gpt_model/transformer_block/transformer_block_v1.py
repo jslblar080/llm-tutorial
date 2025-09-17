@@ -22,7 +22,7 @@ class TransformerBlockV1(BaseTransformerBlock):
         self._att = gpt_model_config.attention
         self._drop_shortcut = nn.Dropout(gpt_model_config.drop_rate)
         self._norm2 = gpt_model_config.transformer_block_v1_layer_norm
-        self._ffn = gpt_model_config._transformer_block_v1_feed_forward
+        self._ffn = gpt_model_config.transformer_block_v1_feed_forward
 
     def forward(self, x):
         shortcut = x

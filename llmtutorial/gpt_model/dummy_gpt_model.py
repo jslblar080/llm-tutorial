@@ -23,10 +23,7 @@ class DummyGPTModel(BaseGPTModel):
                 for _ in range(gpt_model_config.num_trf_blocks)
             ]
         )
-        GPTModelConfig().dummy_gpt_model_final_layer_norm = (
-            gpt_model_config.embedding_dim
-        )
-        self._final_layer_norm = GPTModelConfig().dummy_gpt_model_final_layer_norm
+        self._final_layer_norm = gpt_model_config.dummy_gpt_model_final_layer_norm
         self._output_head = nn.Linear(
             gpt_model_config.embedding_dim,
             gpt_model_config.num_embeddings,
