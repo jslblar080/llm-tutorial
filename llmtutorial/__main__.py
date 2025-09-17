@@ -9,7 +9,12 @@ import torch
 
 from torch.utils.data import DataLoader
 from .config import Config
-from .gpt_model.embedder import Embedder  # TODO: import from gpt_model
+
+# TODO: implement gpt-model from Config #
+from .gpt_model.embedder import Embedder
+from .gpt_model.gpt_model_config import GPTModelConfig
+
+#                                       #
 from .text_processor import TextProcessor
 
 
@@ -50,7 +55,7 @@ if __name__ == "__main__":
     input_embeddings = embedder.input_embeddings(inputs)
     print("\nSize of input embeddings:", input_embeddings.shape)
 
-    Config().attention = input_embeddings
-    attention = Config().attention
+    GPTModelConfig().attention = input_embeddings
+    attention = GPTModelConfig().attention
     context_vector_embeddings = attention(input_embeddings)
     print("\nSize of context vector embeddings:", context_vector_embeddings.shape)

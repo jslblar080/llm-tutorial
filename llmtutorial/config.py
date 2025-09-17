@@ -1,16 +1,6 @@
-from torch import Tensor
 from typing import Tuple
 from .base_dataset import BaseDataset
 from .dataset.gpt_dataset_v1 import GPTDatasetV1
-from .gpt_model.transformer_block.attention.causal_attention import CausalAttention
-from .gpt_model.transformer_block.attention.multi_head_attention import (
-    MultiHeadAttention,
-)
-from .gpt_model.transformer_block.attention.self_attention import SelfAttention
-from .gpt_model.transformer_block.attention.simplified_self_attention import (
-    SimplifiedSelfAttention,
-)
-from .gpt_model.transformer_block.base_attention import BaseAttention
 from .util.singleton_meta import SingletonMeta
 
 
@@ -20,11 +10,6 @@ class Config(metaclass=SingletonMeta):
     _context_length: int
     _dataset: BaseDataset
     _encoding: str
-    _num_embeddings: int
-    _embedding_dim: int
-    _drop_rate: float
-    _num_trf_blocks: int
-    _attention: BaseAttention
 
     def __init__(self) -> None:
         self._texts = (
@@ -33,12 +18,6 @@ class Config(metaclass=SingletonMeta):
         )
         self._context_length = 3
         self._encoding = "o200k_base"  # token ID of <|endoftext|>: 199999
-        self._num_embeddings = (
-            200000  # TODO: Update automatically according to _encoding
-        )
-        self._embedding_dim = 256
-        self._drop_rate = 0.1
-        self._num_trf_blocks = 12
 
     @property
     def texts(self):
@@ -56,40 +35,8 @@ class Config(metaclass=SingletonMeta):
     def encoding(self):
         return self._encoding
 
-    @property
-    def num_embeddings(self):
-        return self._num_embeddings
-
-    @property
-    def embedding_dim(self):
-        return self._embedding_dim
-
-    @property
-    def drop_rate(self):
-        return self._drop_rate
-
-    @property
-    def num_trf_blocks(self):
-        return self._num_trf_blocks
-
-    @property
-    def attention(self):
-        return self._attention
-
     @dataset.setter
     def dataset(self, token_ids: list[int]):
         self._dataset = GPTDatasetV1(
             token_ids, max_length=self._context_length, stride=self._context_length
-        )
-
-    @attention.setter
-    def attention(self, batch_embeddings: Tensor):
-        assert batch_embeddings.ndim == 3, "batch_embeddings must be 3D"
-        assert self._embedding_dim % 64 == 0, "_embedding_dim must be divisible by 64"
-        self._attention = MultiHeadAttention(
-            batch_embeddings.shape[2],
-            batch_embeddings.shape[2],
-            batch_embeddings.shape[1],
-            0.1,
-            self._embedding_dim // 64,
         )

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from torch import Tensor
-from ..config import Config
+from .gpt_model_config import GPTModelConfig
 
 
 class Embedder:
@@ -11,7 +11,7 @@ class Embedder:
     def _token_layer() -> nn.Embedding:
 
         token_embedding_layer = nn.Embedding(
-            Config().num_embeddings, Config().embedding_dim
+            GPTModelConfig().num_embeddings, GPTModelConfig().embedding_dim
         )
         # print(
         #     "\nWeight matrix of token embedding layer:\n", token_embedding_layer.weight
@@ -20,23 +20,23 @@ class Embedder:
         return token_embedding_layer
 
     @staticmethod
-    def _pos_layer() -> nn.Embedding:
+    def _pos_layer(cxt_len: int) -> nn.Embedding:
 
-        pos_embedding_layer = nn.Embedding(
-            Config().context_length, Config().embedding_dim
-        )
+        pos_embedding_layer = nn.Embedding(cxt_len, GPTModelConfig().embedding_dim)
 
         return pos_embedding_layer
 
     @classmethod
     def input_embeddings(cls, inputs: Tensor) -> Tensor:
 
+        batch_size, cxt_len = inputs.shape
+
         token_embedding_layer = cls._token_layer()
         token_embeddings = token_embedding_layer(inputs)
 
-        pos_embedding_layer = cls._pos_layer()
+        pos_embedding_layer = cls._pos_layer(cxt_len)
         pos_embeddings = pos_embedding_layer(
-            torch.arange(Config().context_length, device=inputs.device)
+            torch.arange(cxt_len, device=inputs.device)
         )
 
         return token_embeddings + pos_embeddings
