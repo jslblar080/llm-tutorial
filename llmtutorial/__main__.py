@@ -22,16 +22,11 @@ from .text_processor import TextProcessor
 if __name__ == "__main__":
 
     texts = Config().texts
-
-    text_processor = TextProcessor()
     print(
         "\n",
-        "".join(
-            text_processor.tokenize(texts, verbose=False, id_end=False, pair=False)
-        ),
+        "".join(TextProcessor.tokenize(texts, verbose=False, id_end=False, pair=False)),
     )
-
-    token2id = text_processor.tokenize(texts, verbose=True, id_end=True, pair=True)
+    token2id = TextProcessor.tokenize(texts, verbose=True, id_end=True, pair=True)
 
     token_ids = [id for token, id in token2id]
 
@@ -51,8 +46,7 @@ if __name__ == "__main__":
     print("\nInputs:\n", inputs)
     print("\nTargets:\n", targets)
 
-    embedder = Embedder()
-    input_embeddings = embedder.input_embeddings(inputs)
+    input_embeddings = Embedder.input_embeddings(inputs)
     print("\nSize of input embeddings:", input_embeddings.shape)
 
     GPTModelConfig().attention = input_embeddings
