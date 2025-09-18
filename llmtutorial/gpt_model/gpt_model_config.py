@@ -91,6 +91,6 @@ class GPTModelConfig(metaclass=SingletonMeta):
             batch_embeddings.shape[2],
             batch_embeddings.shape[2],
             batch_embeddings.shape[1],
-            0.1,
+            self._drop_rate,
             self._embedding_dim // 64,
         )
