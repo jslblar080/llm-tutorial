@@ -1,7 +1,9 @@
 import torch.nn as nn
 
+from ..util.singleton_meta import SingletonMeta
 
-class BaseTransformerBlock(nn.Module):
+
+class BaseTransformerBlock(nn.Module, metaclass=SingletonMeta):
 
     def __init__(self) -> None:
         super().__init__()
