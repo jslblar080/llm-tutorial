@@ -2,6 +2,7 @@ import torch
 
 from torch.utils.data import DataLoader
 from llmtutorial.config import Config
+from llmtutorial.gpt_model.embedder import Embedder
 from llmtutorial.gpt_model.gpt_model_config import GPTModelConfig
 from llmtutorial.gpt_model.gpt_model_v1 import GPTModelV1
 from llmtutorial.text_processor import TextProcessor
@@ -38,3 +39,22 @@ class TestDummyGPTModel:
         assert logits.shape[0] == batch_size
         assert logits.shape[1] == Config().context_length
         assert logits.shape[2] == GPTModelConfig().num_embeddings
+
+    def test_weight_tying(self):
+        torch.manual_seed(123)
+        gpt_model_v1 = GPTModelV1()
+        total_params = sum(p.numel() for p in gpt_model_v1.parameters())
+        print(f"\nTotal number of parameters: {total_params:,}")
+        print("Token embedding layer shape:", Embedder.tok_emb_weight().shape)
+        print("Output layer shape:", gpt_model_v1.output_head.weight.shape)
+        total_params_gpt_model_v1 = total_params - sum(
+            p.numel() for p in gpt_model_v1.output_head.parameters()
+        )
+        num_embeddings, embedding_dim = Embedder.tok_emb_weight().shape
+        assert (
+            total_params_gpt_model_v1 == total_params - num_embeddings * embedding_dim
+        )
+        print(
+            f"Number of trainable parameters "
+            f"considering weight tying: {total_params_gpt_model_v1:,} = {total_params:,} - {num_embeddings:,} * {embedding_dim:,}"
+        )

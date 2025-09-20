@@ -39,3 +39,7 @@ class GPTModelV1(BaseGPTModel):
         x = self._final_layer_norm(x)
         logits = self._output_head(x)
         return logits
+
+    @property
+    def output_head(self):
+        return self._output_head
