@@ -1,5 +1,6 @@
 import torch
 
+from llmtutorial.config import Config
 from llmtutorial.gpt_model.gpt_model_config import GPTModelConfig
 from llmtutorial.gpt_model.transformer_block.transformer_block_v1 import (
     TransformerBlockV1,
@@ -11,7 +12,7 @@ class TestTransformerBlockV1:
 
     _seed_num = 123
     _batch_size = 2
-    _cxt_len = 4
+    _cxt_len = Config().context_length
     _embedding_dim = GPTModelConfig().embedding_dim
 
     def test_emb_dim_size(self):

@@ -2,12 +2,12 @@ import torch
 
 from torch.utils.data import DataLoader
 from llmtutorial.config import Config
-from llmtutorial.gpt_model.dummy_gpt_model import DummyGPTModel
 from llmtutorial.gpt_model.gpt_model_config import GPTModelConfig
+from llmtutorial.gpt_model.gpt_model_v1 import GPTModelV1
 from llmtutorial.text_processor import TextProcessor
 
 
-# pytest -sv tests/gpt_model/test_dummy_gpt_model.py
+# pytest -sv tests/gpt_model/test_gpt_model_v1.py
 class TestDummyGPTModel:
 
     def test_inputs_logits_shape(self):
@@ -32,8 +32,8 @@ class TestDummyGPTModel:
         print("\nInputs:\n", inputs)
         assert inputs.shape[0] == batch_size
         assert inputs.shape[1] == Config().context_length
-        dummy_gpt_model = DummyGPTModel()
-        logits = dummy_gpt_model(inputs)
+        gpt_model_v1 = GPTModelV1()
+        logits = gpt_model_v1(inputs)
         print("\nShape of logits:", logits.shape)
         assert logits.shape[0] == batch_size
         assert logits.shape[1] == Config().context_length
