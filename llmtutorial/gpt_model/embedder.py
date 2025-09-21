@@ -9,11 +9,9 @@ class Embedder:
 
     @staticmethod
     def _token_layer() -> nn.Embedding:
-
         token_embedding_layer = nn.Embedding(
             GPTModelConfig().num_embeddings, GPTModelConfig().embedding_dim
         )
-
         return token_embedding_layer
 
     @classmethod
@@ -28,22 +26,16 @@ class Embedder:
 
     @staticmethod
     def _pos_layer(cxt_len: int) -> nn.Embedding:
-
         pos_embedding_layer = nn.Embedding(cxt_len, GPTModelConfig().embedding_dim)
-
         return pos_embedding_layer
 
     @classmethod
     def input_embeddings(cls, inputs: Tensor) -> Tensor:
-
         batch_size, cxt_len = inputs.shape
-
         token_embedding_layer = cls._token_layer()
         token_embeddings = token_embedding_layer(inputs)
-
         pos_embedding_layer = cls._pos_layer(cxt_len)
         pos_embeddings = pos_embedding_layer(
             torch.arange(cxt_len, device=inputs.device)
         )
-
         return token_embeddings + pos_embeddings
