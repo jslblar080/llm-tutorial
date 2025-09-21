@@ -40,7 +40,7 @@ class TestDummyGPTModel:
         assert logits.shape[1] == Config().context_length
         assert logits.shape[2] == GPTModelConfig().num_embeddings
 
-    def test_weight_tying(self):
+    def test_num_params_memory_size(self):
         torch.manual_seed(123)
         gpt_model_v1 = GPTModelV1()
         total_params = sum(p.numel() for p in gpt_model_v1.parameters())
@@ -58,3 +58,6 @@ class TestDummyGPTModel:
             f"Number of trainable parameters "
             f"considering weight tying: {total_params_gpt_model_v1:,} = {total_params:,} - {num_embeddings:,} * {embedding_dim:,}"
         )
+        total_size_bytes = total_params * 4
+        total_size_mb = total_size_bytes / (1024 * 1024)
+        print(f"Total size of the model: {total_size_mb:.2f} MB")
