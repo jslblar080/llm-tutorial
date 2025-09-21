@@ -8,19 +8,19 @@ from ..util.singleton_meta import SingletonMeta
 
 class GPTModelV1Config(metaclass=SingletonMeta):
 
-    _gpt_model_v1_final_layer_norm: BaseLayerNorm
     _gpt_model_v1_trf_block: BaseTransformerBlock
+    _gpt_model_v1_final_layer_norm: BaseLayerNorm
 
     def __init__(self) -> None:
+        self._gpt_model_v1_trf_block = TransformerBlockV1()
         self._gpt_model_v1_final_layer_norm = LayerNormV1(
             GPTModelConfig().embedding_dim
         )
-        self._gpt_model_v1_trf_block = TransformerBlockV1()
-
-    @property
-    def gpt_model_v1_final_layer_norm(self):
-        return self._gpt_model_v1_final_layer_norm
 
     @property
     def gpt_model_v1_trf_block(self):
         return self._gpt_model_v1_trf_block
+
+    @property
+    def gpt_model_v1_final_layer_norm(self):
+        return self._gpt_model_v1_final_layer_norm

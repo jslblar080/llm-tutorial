@@ -5,6 +5,7 @@ from llmtutorial.config import Config
 from llmtutorial.gpt_model.embedder import Embedder
 from llmtutorial.gpt_model.gpt_model_config import GPTModelConfig
 from llmtutorial.gpt_model.gpt_model_v1 import GPTModelV1
+from llmtutorial.gpt_model.gpt_model_v1_config import GPTModelV1Config
 from llmtutorial.text_processor import TextProcessor
 
 
@@ -61,3 +62,21 @@ class TestDummyGPTModel:
         total_size_bytes = total_params * 4
         total_size_mb = total_size_bytes / (1024 * 1024)
         print(f"Total size of the model: {total_size_mb:.2f} MB")
+
+    def test_gpt_model_config(self):
+        name_embdim_numtrf = (
+            ("GPT-small", 768, 12),
+            ("GPT-medium", 1024, 24),
+            ("GPT-large", 1280, 36),
+            ("GPT-XL", 1600, 48),
+        )
+        gpt_model_config = GPTModelConfig()
+        print()
+        for model_name, embedding_dim, num_trf_blocks in name_embdim_numtrf:
+            gpt_model_config.embedding_dim = embedding_dim
+            gpt_model_config.num_trf_blocks = num_trf_blocks
+            gpt_model_v1 = GPTModelV1()
+            total_params = sum(p.numel() for p in gpt_model_v1.parameters())
+            total_size_bytes = total_params * 4
+            total_size_mb = total_size_bytes / (1024 * 1024)
+            print(f"Total size of {model_name}: {total_size_mb:.2f} MB")

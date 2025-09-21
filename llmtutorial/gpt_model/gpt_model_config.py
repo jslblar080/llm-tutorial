@@ -27,7 +27,8 @@ class GPTModelConfig(metaclass=SingletonMeta):
     _num_trf_blocks: int
     _attention: BaseAttention
 
-    _transformer_block_v1_layer_norm: BaseLayerNorm
+    _transformer_block_v1_first_layer_norm: BaseLayerNorm
+    _transformer_block_v1_second_layer_norm: BaseLayerNorm
     _transformer_block_v1_feed_forward: BaseFeedForward
     _dummy_gpt_model_final_layer_norm: BaseLayerNorm
     _dummy_gpt_model_trf_block: BaseTransformerBlock
@@ -40,7 +41,8 @@ class GPTModelConfig(metaclass=SingletonMeta):
         self._drop_rate = 0.1
         self._num_trf_blocks = 12
 
-        self._transformer_block_v1_layer_norm = LayerNormV1(self._embedding_dim)
+        self._transformer_block_v1_first_layer_norm = LayerNormV1(self._embedding_dim)
+        self._transformer_block_v1_second_layer_norm = LayerNormV1(self._embedding_dim)
         self._transformer_block_v1_feed_forward = FeedForwardV1(
             self._embedding_dim, GELUApprox()
         )
@@ -68,8 +70,12 @@ class GPTModelConfig(metaclass=SingletonMeta):
         return self._attention
 
     @property
-    def transformer_block_v1_layer_norm(self):
-        return self._transformer_block_v1_layer_norm
+    def transformer_block_v1_first_layer_norm(self):
+        return self._transformer_block_v1_first_layer_norm
+
+    @property
+    def transformer_block_v1_second_layer_norm(self):
+        return self._transformer_block_v1_second_layer_norm
 
     @property
     def transformer_block_v1_feed_forward(self):
@@ -82,6 +88,16 @@ class GPTModelConfig(metaclass=SingletonMeta):
     @property
     def dummy_gpt_model_trf_block(self):
         return self._dummy_gpt_model_trf_block
+
+    @embedding_dim.setter
+    def embedding_dim(self, embedding_dim: int):
+        assert embedding_dim > 0, "_embedding_dim must be positive"
+        self._embedding_dim = embedding_dim
+
+    @num_trf_blocks.setter
+    def num_trf_blocks(self, num_trf_blocks: int):
+        assert num_trf_blocks > 0, "_num_trf_blocks must be positive"
+        self._num_trf_blocks = num_trf_blocks
 
     @attention.setter
     def attention(self, batch_embeddings: Tensor):
