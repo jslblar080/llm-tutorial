@@ -21,3 +21,8 @@ class TestFeedForwardV1:
         x = torch.rand(self._batch_size, self._cxt_len, self._embedding_dim)
         out = ffn(x)
         assert x.shape == out.shape
+
+    def test_num_params(self):
+        ffn = FeedForwardV1(self._embedding_dim, self._activ_func)
+        ffn_params = sum(p.numel() for p in ffn.parameters())
+        print(f"\nNumber of parameters in FeedForwardV1: {ffn_params:,}")
