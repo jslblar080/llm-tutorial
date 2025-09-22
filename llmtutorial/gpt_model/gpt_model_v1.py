@@ -18,7 +18,7 @@ class GPTModelV1(BaseGPTModel):
         super().__init__()
         gpt_model_config = GPTModelConfig()
         gpt_model_v1_config = GPTModelV1Config()
-        self._dropout = nn.Dropout(gpt_model_config.drop_rate)
+        self._dropout = nn.Dropout(gpt_model_config.drop_rate_emb)
         self._trf_blocks = nn.Sequential(
             *[
                 gpt_model_v1_config.gpt_model_v1_trf_block

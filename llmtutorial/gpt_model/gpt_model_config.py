@@ -23,7 +23,9 @@ class GPTModelConfig(metaclass=SingletonMeta):
 
     _num_embeddings: int
     _embedding_dim: int
-    _drop_rate: float
+    _drop_rate_emb: float
+    _drop_rate_attn: float
+    _drop_rate_shortcut: float
     _num_trf_blocks: int
     _attention: BaseAttention
 
@@ -41,7 +43,9 @@ class GPTModelConfig(metaclass=SingletonMeta):
             200000  # TODO: Update automatically according to Config().encoding
         )
         self._embedding_dim = 64 * 4
-        self._drop_rate = 0.1
+        self._drop_rate_emb = 0.1
+        self._drop_rate_attn = 0.1
+        self._drop_rate_shortcut = 0.1
         self._num_trf_blocks = 12
 
         self._transformer_block_v1_first_layer_norm = LayerNormV1(self._embedding_dim)
@@ -61,8 +65,16 @@ class GPTModelConfig(metaclass=SingletonMeta):
         return self._embedding_dim
 
     @property
-    def drop_rate(self):
-        return self._drop_rate
+    def drop_rate_emb(self):
+        return self._drop_rate_emb
+
+    @property
+    def drop_rate_attn(self):
+        return self._drop_rate_attn
+
+    @property
+    def drop_rate_shortcut(self):
+        return self._drop_rate_shortcut
 
     @property
     def num_trf_blocks(self):
@@ -110,6 +122,6 @@ class GPTModelConfig(metaclass=SingletonMeta):
             batch_embeddings.shape[2],
             batch_embeddings.shape[2],
             batch_embeddings.shape[1],
-            self._drop_rate,
+            self._drop_rate_attn,
             self._embedding_dim // 64,
         )

@@ -16,7 +16,7 @@ class DummyGPTModel(BaseGPTModel):
     def __init__(self) -> None:
         super().__init__()
         gpt_model_config = GPTModelConfig()
-        self._dropout = nn.Dropout(gpt_model_config.drop_rate)
+        self._dropout = nn.Dropout(gpt_model_config.drop_rate_emb)
         self._trf_blocks = nn.Sequential(
             *[
                 gpt_model_config.dummy_gpt_model_trf_block

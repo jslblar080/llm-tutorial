@@ -20,7 +20,7 @@ class TransformerBlockV1(BaseTransformerBlock):
         gpt_model_config = GPTModelConfig()
         self._norm1 = gpt_model_config.transformer_block_v1_first_layer_norm
         self._att = None
-        self._drop_shortcut = nn.Dropout(gpt_model_config.drop_rate)
+        self._drop_shortcut = nn.Dropout(gpt_model_config.drop_rate_shortcut)
         self._norm2 = gpt_model_config.transformer_block_v1_second_layer_norm
         self._ffn = gpt_model_config.transformer_block_v1_feed_forward
 
