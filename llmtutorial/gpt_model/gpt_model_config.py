@@ -34,6 +34,9 @@ class GPTModelConfig(metaclass=SingletonMeta):
     _dummy_gpt_model_trf_block: BaseTransformerBlock
 
     def __init__(self) -> None:
+        self.initizalize()
+
+    def initizalize(self) -> None:
         self._num_embeddings = (
             200000  # TODO: Update automatically according to Config().encoding
         )

@@ -1,3 +1,4 @@
+import tiktoken
 import torch
 
 from torch.utils.data import DataLoader
@@ -5,7 +6,6 @@ from llmtutorial.config import Config
 from llmtutorial.gpt_model.embedder import Embedder
 from llmtutorial.gpt_model.gpt_model_config import GPTModelConfig
 from llmtutorial.gpt_model.gpt_model_v1 import GPTModelV1
-from llmtutorial.gpt_model.gpt_model_v1_config import GPTModelV1Config
 from llmtutorial.text_processor import TextProcessor
 
 
@@ -80,3 +80,40 @@ class TestDummyGPTModel:
             total_size_bytes = total_params * 4
             total_size_mb = total_size_bytes / (1024 * 1024)
             print(f"Total size of {model_name}: {total_size_mb:.2f} MB")
+
+    def test_text_generation_without_training(self):
+        torch.manual_seed(123)
+        texts = Config().texts
+        text_processor = TextProcessor()
+        token_ids = text_processor.tokenize(
+            texts, verbose=False, id_end=True, pair=False
+        )
+        Config().dataset = token_ids
+        dataset = Config().dataset
+        batch_size = 3
+        dataloader = DataLoader(
+            dataset=dataset,
+            batch_size=batch_size,
+            shuffle=True,
+            num_workers=0,
+            drop_last=True,
+        )
+        data_iter = iter(dataloader)
+        inputs, targets = next(data_iter)
+        print("\nInputs:\n", inputs)
+        GPTModelConfig().initizalize()
+        gpt_model_v1 = GPTModelV1().eval()
+        max_new_tokens = 7
+        for _ in range(max_new_tokens):
+            inputs_cond = inputs[:, -Config().context_length :]
+            with torch.no_grad():
+                logits = gpt_model_v1(inputs_cond)[:, -1, :]
+                probas = torch.softmax(logits, dim=-1)
+                inputs_next = torch.argmax(probas, dim=-1, keepdim=True)
+                inputs = torch.cat((inputs, inputs_next), dim=1)
+        print("Inputs:\n", inputs)
+        for batch in inputs:
+            decoded_text = tiktoken.get_encoding(Config().encoding).decode(
+                batch.tolist()
+            )
+            print(decoded_text)
