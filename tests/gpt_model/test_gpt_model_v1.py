@@ -102,11 +102,11 @@ class TestDummyGPTModel:
         inputs, targets = next(data_iter)
         print("\nInputs:\n", inputs)
         GPTModelConfig().initizalize()
-        gpt_model_v1 = GPTModelV1().eval()
+        gpt_model_v1 = GPTModelV1().eval()  # disable dropout (no training)
         max_new_tokens = 7
         for _ in range(max_new_tokens):
             inputs_cond = inputs[:, -Config().context_length :]
-            with torch.no_grad():
+            with torch.no_grad():  # prediction without training
                 logits = gpt_model_v1(inputs_cond)[:, -1, :]
                 probas = torch.softmax(logits, dim=-1)
                 inputs_next = torch.argmax(probas, dim=-1, keepdim=True)
