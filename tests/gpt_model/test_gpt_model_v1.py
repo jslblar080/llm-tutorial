@@ -83,7 +83,10 @@ class TestDummyGPTModel:
 
     def test_text_generation_without_training(self):
         torch.manual_seed(123)
-        texts = Config().texts
+        texts = (
+            "In the heart of the city stood the old library, a relic from a bygone era.",
+            "Its stone walls bore the marks of time, and ivy clung tightly to its facade.",
+        )
         text_processor = TextProcessor()
         token_ids = text_processor.tokenize(
             texts, verbose=False, id_end=True, pair=False
@@ -99,21 +102,23 @@ class TestDummyGPTModel:
             drop_last=True,
         )
         data_iter = iter(dataloader)
-        inputs, targets = next(data_iter)
-        print("\nInputs:\n", inputs)
+        max_new_tokens = 3
         GPTModelConfig().initizalize()
         gpt_model_v1 = GPTModelV1().eval()  # disable dropout (no training)
-        max_new_tokens = 7
-        for _ in range(max_new_tokens):
-            inputs_cond = inputs[:, -Config().context_length :]
-            with torch.no_grad():  # prediction without training
-                logits = gpt_model_v1(inputs_cond)[:, -1, :]
-                probas = torch.softmax(logits, dim=-1)
-                inputs_next = torch.argmax(probas, dim=-1, keepdim=True)
-                inputs = torch.cat((inputs, inputs_next), dim=1)
-        print("Inputs:\n", inputs)
-        for batch in inputs:
-            decoded_text = tiktoken.get_encoding(Config().encoding).decode(
-                batch.tolist()
-            )
-            print(decoded_text)
+        for inputs, targets in data_iter:
+            print("\nInputs:\n", inputs)
+            print("Targets:\n", targets)
+            for _ in range(max_new_tokens):
+                inputs_cond = inputs[:, -Config().context_length :]
+                with torch.no_grad():  # prediction without training
+                    logits = gpt_model_v1(inputs_cond)[:, -1, :]
+                    probas = torch.softmax(logits, dim=-1)
+                    inputs_next = torch.argmax(probas, dim=-1, keepdim=True)
+                    inputs = torch.cat((inputs, inputs_next), dim=1)
+            inputs_outputs = inputs
+            print("Inputs + Outputs:\n", inputs_outputs, "\n")
+            for input_output in inputs_outputs:
+                decoded_text = tiktoken.get_encoding(Config().encoding).decode(
+                    input_output.tolist()
+                )
+                print(decoded_text)
