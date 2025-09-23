@@ -87,8 +87,7 @@ class TestDummyGPTModel:
             "In the heart of the city stood the old library, a relic from a bygone era.",
             "Its stone walls bore the marks of time, and ivy clung tightly to its facade.",
         )
-        text_processor = TextProcessor()
-        token_ids = text_processor.tokenize(
+        token_ids = TextProcessor.tokenize(
             texts, verbose=False, id_end=True, pair=False
         )
         Config().dataset = token_ids
@@ -118,7 +117,4 @@ class TestDummyGPTModel:
             inputs_outputs = inputs
             print("Inputs + Outputs:\n", inputs_outputs, "\n")
             for input_output in inputs_outputs:
-                decoded_text = tiktoken.get_encoding(Config().encoding).decode(
-                    input_output.tolist()
-                )
-                print(decoded_text)
+                TextProcessor.decode(input_output, verbose=True)

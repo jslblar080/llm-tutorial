@@ -1,5 +1,6 @@
 import tiktoken
 
+from torch import Tensor
 from typing import Tuple
 from .config import Config
 
@@ -37,3 +38,12 @@ class TextProcessor:
             print("\n", category_list[0], category_list[1])
 
         return category_list[1]
+
+    @staticmethod
+    def decode(token_ids: Tensor, verbose=False) -> str:
+        decoded_text = tiktoken.get_encoding(Config().encoding).decode(
+            token_ids.tolist()
+        )
+        if verbose:
+            print(decoded_text)
+        return decoded_text
