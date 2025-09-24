@@ -104,6 +104,7 @@ class TestDummyGPTModel:
         max_new_tokens = 3
         GPTModelConfig().initizalize()
         gpt_model_v1 = GPTModelV1().eval()  # disable dropout (no training)
+        num_batches, total_loss = 0, 0
         for inputs, targets in data_iter:
             print("\nInputs:\n", inputs)
             print("Targets:\n", targets)
@@ -114,7 +115,16 @@ class TestDummyGPTModel:
                     probas = torch.softmax(logits, dim=-1)
                     inputs_next = torch.argmax(probas, dim=-1, keepdim=True)
                     inputs = torch.cat((inputs, inputs_next), dim=1)
+                    targets_flat = targets[:, -1]
+                    loss = torch.nn.functional.cross_entropy(
+                        logits, targets_flat
+                    ).item()
+                    total_loss += loss
             inputs_outputs = inputs
             print("Inputs + Outputs:\n", inputs_outputs, "\n")
             for input_output in inputs_outputs:
                 TextProcessor.decode(input_output, verbose=True)
+            num_batches += 1
+        print("\nSum of average loss within batch:", total_loss)
+        print("Number of batches:", num_batches)
+        print("Average loss:", total_loss / num_batches)
