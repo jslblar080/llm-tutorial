@@ -1,4 +1,4 @@
-import tiktoken
+import math
 import torch
 
 from torch.utils.data import DataLoader
@@ -104,7 +104,7 @@ class TestDummyGPTModel:
         max_new_tokens = 3
         GPTModelConfig().initizalize()
         gpt_model_v1 = GPTModelV1().eval()  # disable dropout (no training)
-        num_batches, total_loss = 0, 0
+        num_batches, total_loss, sum_avg_minus_log_probas = 0, 0, 0
         for inputs, targets in data_iter:
             print("\nInputs:\n", inputs)
             print("Targets:\n", targets)
@@ -120,6 +120,10 @@ class TestDummyGPTModel:
                         logits, targets_flat
                     ).item()
                     total_loss += loss
+                    batch_idx = torch.arange(probas.size(0))  # fancy indexing
+                    sum_avg_minus_log_probas -= torch.mean(
+                        torch.log(probas[batch_idx, targets_flat])
+                    ).item()
             inputs_outputs = inputs
             print("Inputs + Outputs:\n", inputs_outputs, "\n")
             for input_output in inputs_outputs:
@@ -128,3 +132,4 @@ class TestDummyGPTModel:
         print("\nSum of average loss within batch:", total_loss)
         print("Number of batches:", num_batches)
         print("Average loss:", total_loss / num_batches)
+        assert math.isclose(sum_avg_minus_log_probas, total_loss, rel_tol=1e-5)
