@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 
 from torch import Tensor
-from typing import Tuple
 
 
 # pytest -sv tests/learning_tests/test_shortcut_connections_learning.py
@@ -15,7 +14,7 @@ class TestShortcutConnectionsLearning:
         _grad_means = ()
 
         def __init__(
-            self, layer_sizes: Tuple[int, int, int, int, int, int], use_shortcut: bool
+            self, layer_sizes: tuple[int, int, int, int, int, int], use_shortcut: bool
         ) -> None:
             super().__init__()
             self._use_shortcut = use_shortcut

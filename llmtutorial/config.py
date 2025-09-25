@@ -1,4 +1,3 @@
-from typing import Tuple
 from .base_dataset import BaseDataset
 from .dataset.gpt_dataset_v1 import GPTDatasetV1
 from .util.singleton_meta import SingletonMeta
@@ -6,7 +5,7 @@ from .util.singleton_meta import SingletonMeta
 
 class Config(metaclass=SingletonMeta):
 
-    _texts: Tuple[str, ...]
+    _texts: tuple[str, ...]
     _context_length: int
     _dataset: BaseDataset
     _encoding: str
