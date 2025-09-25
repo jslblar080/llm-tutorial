@@ -31,6 +31,18 @@ class Config(metaclass=SingletonMeta):
     def encoding(self):
         return self._encoding
 
+    @texts.setter
+    def texts(self, text_path: tuple[str, ...]):
+        self._texts = text_path
+
+    @context_length.setter
+    def context_length(self, cxt_len: int):
+        self._context_length = cxt_len
+
+    @encoding.setter
+    def encoding(self, encoding: str):
+        self._encoding = encoding
+
     @dataset.setter
     def dataset(self, token_ids: list[int]):
         self._dataset = GPTDatasetV1(
