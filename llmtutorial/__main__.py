@@ -5,6 +5,7 @@
 # source .venv/bin/activate
 # uv pip install -r requirements.txt
 
+import os
 import torch
 
 from torch.utils.data import DataLoader
@@ -21,7 +22,9 @@ from .text_processor import TextProcessor
 # python -m llmtutorial
 if __name__ == "__main__":
 
-    texts = Config().texts
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(script_dir, *Config().texts)
+    texts = TextProcessor.file_to_sentence_tuple(file_path)
     print(
         "\n",
         "".join(TextProcessor.tokenize(texts, verbose=False, id_end=False, pair=False)),

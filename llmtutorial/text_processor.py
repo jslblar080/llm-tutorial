@@ -1,3 +1,4 @@
+import re
 import tiktoken
 
 from torch import Tensor
@@ -6,6 +7,13 @@ from .config import Config
 
 
 class TextProcessor:
+
+    @staticmethod
+    def file_to_sentence_tuple(file_path: str) -> Tuple[str, ...]:
+        with open(file_path, "r", encoding="utf-8") as file:
+            text_data = file.read()
+            sentences = re.split(r"(?<=[.!?])\s+", text_data.strip())
+            return tuple(sentences)
 
     @staticmethod
     def tokenize(

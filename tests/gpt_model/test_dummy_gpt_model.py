@@ -12,7 +12,10 @@ class TestDummyGPTModel:
 
     def test_inputs_logits_shape(self):
         torch.manual_seed(123)
-        texts = Config().texts
+        texts = (
+            "In the heart of the city stood the old library, a relic from a bygone era.",
+            "Its stone walls bore the marks of time, and ivy clung tightly to its facade.",
+        )
         text_processor = TextProcessor()
         token_ids = text_processor.tokenize(
             texts, verbose=False, id_end=True, pair=False
