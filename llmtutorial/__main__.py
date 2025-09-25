@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(script_dir, *Config().texts)
-    texts = TextProcessor.file_to_sentence_tuple(file_path)
+    texts = TextProcessor.file_to_text_data(file_path)
     print(
         "\n",
         "".join(TextProcessor.tokenize(texts, verbose=False, id_end=False, pair=False)),

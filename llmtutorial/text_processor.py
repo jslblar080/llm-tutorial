@@ -1,32 +1,34 @@
-import re
 import tiktoken
 
 from torch import Tensor
-from typing import Tuple
 from .config import Config
 
 
 class TextProcessor:
 
     @staticmethod
-    def file_to_sentence_tuple(file_path: str) -> Tuple[str, ...]:
+    def file_to_text_data(file_path: str, verbose=False) -> str:
         with open(file_path, "r", encoding="utf-8") as file:
             text_data = file.read()
-            sentences = re.split(r"(?<=[.!?])\s+", text_data.strip())
-            return tuple(sentences)
+            if verbose:
+                print("Characters:", len(text_data))
+            return text_data
 
     @staticmethod
     def tokenize(
-        texts: Tuple[str, ...], verbose=False, id_end=False, pair=False
+        texts: tuple[str, ...] | str, verbose=False, id_end=False, pair=False
     ) -> list:
 
         encoding = Config().encoding
 
         bpe_tokenizer = tiktoken.get_encoding(encoding)
 
-        ids = bpe_tokenizer.encode(
-            "<|endoftext|>".join(texts), allowed_special={"<|endoftext|>"}
-        )
+        if isinstance(texts, tuple):
+            ids = bpe_tokenizer.encode(
+                "<|endoftext|>".join(texts), allowed_special={"<|endoftext|>"}
+            )
+        if isinstance(texts, str):
+            ids = bpe_tokenizer.encode(texts)
         bytes = [bpe_tokenizer.decode_single_token_bytes(id) for id in ids]
         tokens = [byte.decode("utf-8") for byte in bytes]
         token2id = list(zip(tokens, ids))
