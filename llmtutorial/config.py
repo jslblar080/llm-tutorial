@@ -6,6 +6,7 @@ from .util.singleton_meta import SingletonMeta
 class Config(metaclass=SingletonMeta):
 
     _texts: tuple[str, ...]
+    _train_ratio: float
     _context_length: int
     _dataset: BaseDataset
     _encoding: str
@@ -15,12 +16,17 @@ class Config(metaclass=SingletonMeta):
 
     def initialize(self) -> None:
         self._texts = ("assets", "sample.txt")
+        self._train_ratio = 0.9
         self._context_length = 3
         self._encoding = "o200k_base"  # token ID of <|endoftext|>: 199999
 
     @property
     def texts(self):
         return self._texts
+
+    @property
+    def train_ratio(self):
+        return self._train_ratio
 
     @property
     def context_length(self):
@@ -37,6 +43,10 @@ class Config(metaclass=SingletonMeta):
     @texts.setter
     def texts(self, text_path: tuple[str, ...]):
         self._texts = text_path
+
+    @train_ratio.setter
+    def train_ratio(self, train_ratio: float):
+        self._train_ratio = train_ratio
 
     @context_length.setter
     def context_length(self, cxt_len: int):
