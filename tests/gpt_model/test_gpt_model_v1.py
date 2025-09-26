@@ -1,4 +1,5 @@
 import math
+import os
 import torch
 
 from torch.utils.data import DataLoader
@@ -10,7 +11,7 @@ from llmtutorial.text_processor import TextProcessor
 
 
 # pytest -sv tests/gpt_model/test_gpt_model_v1.py
-class TestDummyGPTModel:
+class TestGPTModelV1:
 
     def test_inputs_logits_shape(self):
         torch.manual_seed(123)

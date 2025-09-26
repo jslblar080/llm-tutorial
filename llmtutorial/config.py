@@ -11,6 +11,9 @@ class Config(metaclass=SingletonMeta):
     _encoding: str
 
     def __init__(self) -> None:
+        self.initialize()
+
+    def initialize(self) -> None:
         self._texts = ("assets", "sample.txt")
         self._context_length = 3
         self._encoding = "o200k_base"  # token ID of <|endoftext|>: 199999
