@@ -38,15 +38,15 @@ class Main:
 
         token_ids = [id for token, id in token2id]
 
-        torch.manual_seed(123)
+        torch.manual_seed(Config().seed_num)
 
         Config().dataset = token_ids
         dataset = Config().dataset
         dataloader = DataLoader(
             dataset=dataset,
-            batch_size=3,
+            batch_size=Config().batch_size,
             shuffle=True,
-            num_workers=0,
+            num_workers=Config().num_workers,
             drop_last=True,
         )
         data_iter = iter(dataloader)

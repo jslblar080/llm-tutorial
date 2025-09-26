@@ -8,6 +8,7 @@ from llmtutorial.gpt_model.embedder import Embedder
 from llmtutorial.gpt_model.gpt_model_config import GPTModelConfig
 from llmtutorial.gpt_model.gpt_model_v1 import GPTModelV1
 from llmtutorial.text_processor import TextProcessor
+from llmtutorial.trainer import Trainer
 
 
 # pytest -sv tests/gpt_model/test_gpt_model_v1.py
@@ -144,6 +145,9 @@ class TestGPTModelV1:
         path_except_last = config.texts[:-1]
         config.texts = (*path_except_last, "the-verdict.txt")
         config.train_ratio = 0.9
+        config.seed_num = 123
+        config.batch_size = 2
+        config.num_workers = 0
         config.context_length = 256
         config.encoding = "gpt2"
 
@@ -152,36 +156,9 @@ class TestGPTModelV1:
             os.path.join(script_dir, "..", "..", "llmtutorial", *Config().texts)
         )
         text_data = TextProcessor.file_to_text_data(file_path)
-        split_idx = int(config.train_ratio * len(text_data))
-        train_data = text_data[:split_idx]
-        val_data = text_data[split_idx:]
 
-        torch.manual_seed(123)
-        train_token_ids = TextProcessor.tokenize(train_data, id_end=True, pair=False)
-        Config().dataset = train_token_ids
-        train_dataset = Config().dataset
-        train_dataloader = DataLoader(
-            dataset=train_dataset,
-            batch_size=2,
-            shuffle=True,
-            num_workers=0,
-            drop_last=True,
+        train_dataloader, val_dataloader = Trainer.create_dataloader(
+            text_data, verbose=True
         )
-        val_token_ids = TextProcessor.tokenize(val_data, id_end=True, pair=False)
-        Config().dataset = val_token_ids
-        val_dataset = Config().dataset
-        val_dataloader = DataLoader(
-            dataset=val_dataset,
-            batch_size=2,
-            shuffle=False,
-            num_workers=0,
-            drop_last=False,
-        )
-        print("\nTrain loader:")
-        for inputs, targets in train_dataloader:
-            print(inputs.shape, targets.shape)
-        print("\nValidation loader:")
-        for inputs, targets in val_dataloader:
-            print(inputs.shape, targets.shape)
 
         # TODO: calculate cross entropy loss
