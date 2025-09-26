@@ -138,6 +138,7 @@ class TestGPTModelV1:
         print("Average loss:", total_loss / num_batches)
         assert math.isclose(sum_avg_minus_log_probas, total_loss, rel_tol=1e-5)
 
+    # pytest -sv tests/gpt_model/test_gpt_model_v1.py::TestGPTModelV1::test_training
     def test_training(self):
         config = Config()
         path_except_last = config.texts[:-1]
@@ -177,10 +178,10 @@ class TestGPTModelV1:
             drop_last=False,
         )
         print("\nTrain loader:")
-        for x, y in train_dataloader:
-            print(x.shape, y.shape)
+        for inputs, targets in train_dataloader:
+            print(inputs.shape, targets.shape)
         print("\nValidation loader:")
-        for x, y in val_dataloader:
-            print(x.shape, y.shape)
+        for inputs, targets in val_dataloader:
+            print(inputs.shape, targets.shape)
 
         # TODO: calculate cross entropy loss
