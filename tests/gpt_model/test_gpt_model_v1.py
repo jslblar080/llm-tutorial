@@ -149,6 +149,8 @@ class TestGPTModelV1:
         config.num_workers = 0
         config.context_length = 256
         config.encoding = "gpt2"
+        config.dataset_flags.set("GPTDatasetV1")
+        config.gpt_model_flags.set("GPTModelV1")
         config.gpt_model = config.seed_num
         assert isinstance(config.gpt_model, GPTModelV1), "gpt-model is not GPTModelV1"
 
