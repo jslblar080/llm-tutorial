@@ -10,7 +10,7 @@ from ..gpt_model_config import GPTModelConfig
 class TransformerBlockV1(BaseTransformerBlock):
 
     _norm1: BaseLayerNorm
-    _att: BaseAttention | None
+    _att: BaseAttention
     _drop_shortcut: nn.Dropout
     _norm2: BaseLayerNorm
     _ffn: BaseFeedForward
@@ -19,7 +19,6 @@ class TransformerBlockV1(BaseTransformerBlock):
         super().__init__()
         gpt_model_config = GPTModelConfig()
         self._norm1 = gpt_model_config.transformer_block_v1_first_layer_norm
-        self._att = None
         self._drop_shortcut = nn.Dropout(gpt_model_config.drop_rate_shortcut)
         self._norm2 = gpt_model_config.transformer_block_v1_second_layer_norm
         self._ffn = gpt_model_config.transformer_block_v1_feed_forward
@@ -27,9 +26,8 @@ class TransformerBlockV1(BaseTransformerBlock):
     def forward(self, x):
         shortcut = x
         x = self._norm1(x)
-        if self._att is None:
-            GPTModelConfig().attention = x
-            self._att = GPTModelConfig().attention
+        GPTModelConfig().attention = x
+        self._att = GPTModelConfig().attention
         x = self._att(x)
         x = self._drop_shortcut(x)
         x = shortcut + x

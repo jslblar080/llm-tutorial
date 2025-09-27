@@ -19,12 +19,7 @@ class GPTModelV1(BaseGPTModel):
         gpt_model_config = GPTModelConfig()
         gpt_model_v1_config = GPTModelV1Config()
         self._dropout = nn.Dropout(gpt_model_config.drop_rate_emb)
-        self._trf_blocks = nn.Sequential(
-            *[
-                gpt_model_v1_config.gpt_model_v1_trf_block
-                for _ in range(gpt_model_config.num_trf_blocks)
-            ]
-        )
+        self._trf_blocks = gpt_model_v1_config.gpt_model_v1_trf_blocks
         self._final_layer_norm = gpt_model_v1_config.gpt_model_v1_final_layer_norm
         self._output_head = nn.Linear(
             gpt_model_config.embedding_dim,

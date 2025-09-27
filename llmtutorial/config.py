@@ -1,5 +1,7 @@
 from .base_dataset import BaseDataset
+from .base_gpt_model import BaseGPTModel
 from .dataset.gpt_dataset_v1 import GPTDatasetV1
+from .gpt_model.gpt_model_v1 import GPTModelV1
 from .util.singleton_meta import SingletonMeta
 
 
@@ -11,8 +13,9 @@ class Config(metaclass=SingletonMeta):
     _batch_size: int
     _num_workers: int
     _context_length: int
-    _dataset: BaseDataset
     _encoding: str
+    _dataset: BaseDataset
+    _gpt_model: BaseGPTModel
 
     def __init__(self) -> None:
         self.initialize()
@@ -25,6 +28,7 @@ class Config(metaclass=SingletonMeta):
         self._num_workers = 0
         self._context_length = 3
         self._encoding = "o200k_base"  # token ID of <|endoftext|>: 199999
+        self._gpt_model = GPTModelV1()
 
     @property
     def texts(self):
@@ -57,6 +61,10 @@ class Config(metaclass=SingletonMeta):
     @property
     def encoding(self):
         return self._encoding
+
+    @property
+    def gpt_model(self):
+        return self._gpt_model
 
     @texts.setter
     def texts(self, text_path: tuple[str, ...]):
