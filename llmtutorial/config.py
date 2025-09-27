@@ -1,7 +1,9 @@
 from .base_dataset import BaseDataset
 from .base_gpt_model import BaseGPTModel
 from .dataset.gpt_dataset_v1 import GPTDatasetV1
+from .gpt_model.dummy_gpt_model import DummyGPTModel
 from .gpt_model.gpt_model_v1 import GPTModelV1
+from .util.one_hot_dict import OneHotDict
 from .util.singleton_meta import SingletonMeta
 
 
@@ -15,7 +17,9 @@ class Config(metaclass=SingletonMeta):
     _context_length: int
     _encoding: str
     _dataset: BaseDataset
+    _dataset_flags: OneHotDict
     _gpt_model: BaseGPTModel
+    _gpt_model_flags: OneHotDict
 
     def __init__(self) -> None:
         self.initialize()
@@ -28,6 +32,10 @@ class Config(metaclass=SingletonMeta):
         self._num_workers = 0
         self._context_length = 3
         self._encoding = "o200k_base"  # token ID of <|endoftext|>: 199999
+        self._dataset_flags = OneHotDict(("GPTDatasetV1"))
+        self._dataset_flags.set("GPTDatasetV1")
+        self._gpt_model_flags = OneHotDict(("DummyGPTModel", "GPTModelV1"))
+        self._gpt_model_flags.set("GPTModelV1")
 
     @property
     def texts(self):
@@ -54,16 +62,24 @@ class Config(metaclass=SingletonMeta):
         return self._context_length
 
     @property
-    def dataset(self):
-        return self._dataset
-
-    @property
     def encoding(self):
         return self._encoding
 
     @property
+    def dataset(self):
+        return self._dataset
+
+    @property
+    def dataset_flags(self):
+        return self._dataset_flags
+
+    @property
     def gpt_model(self):
         return self._gpt_model
+
+    @property
+    def gpt_model_flags(self):
+        return self._gpt_model_flags
 
     @texts.setter
     def texts(self, text_path: tuple[str, ...]):
@@ -95,10 +111,14 @@ class Config(metaclass=SingletonMeta):
 
     @dataset.setter
     def dataset(self, token_ids: list[int]):
-        self._dataset = GPTDatasetV1(
-            token_ids, max_length=self._context_length, stride=self._context_length
-        )
+        if self._dataset_flags["GPTDatasetV1"]:
+            self._dataset = GPTDatasetV1(
+                token_ids, max_length=self._context_length, stride=self._context_length
+            )
 
     @gpt_model.setter
     def gpt_model(self, seed_num: int):
-        self._gpt_model = GPTModelV1(seed_num)
+        if self._gpt_model_flags["DummyGPTModel"]:
+            self._gpt_model = DummyGPTModel()
+        if self._gpt_model_flags["GPTModelV1"]:
+            self._gpt_model = GPTModelV1(seed_num)

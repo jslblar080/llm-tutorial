@@ -27,6 +27,8 @@ class CLI(metaclass=SingletonMeta):
         numworkers=0,
         cxtlen=256,
         encoding="gpt2",
+        dataset="GPTDatasetV1",
+        gpt_model="GPTModelV1",
     ):
         """Set parameters for config.py"""
         self.succeeded = False
@@ -38,7 +40,9 @@ Seed number: {seednum}
 Batch size: {batchsize}
 Number of workers: {numworkers}
 Context length: {cxtlen}
-Encoding: {encoding}"""
+Encoding: {encoding}
+Dataset: {dataset}
+GPT Model: {gpt_model}"""
         )
         config = Config()
         path_except_last = config.texts[:-1]
@@ -49,6 +53,8 @@ Encoding: {encoding}"""
         config.num_workers = int(numworkers)
         config.context_length = int(cxtlen)
         config.encoding = encoding
+        config.dataset_flags.set(dataset)
+        config.gpt_model_flags.set(gpt_model)
         self.succeeded = True
 
     def gptmodelconfig(self):
