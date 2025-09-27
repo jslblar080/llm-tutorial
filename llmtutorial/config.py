@@ -28,7 +28,6 @@ class Config(metaclass=SingletonMeta):
         self._num_workers = 0
         self._context_length = 3
         self._encoding = "o200k_base"  # token ID of <|endoftext|>: 199999
-        self._gpt_model = GPTModelV1()
 
     @property
     def texts(self):
@@ -99,3 +98,7 @@ class Config(metaclass=SingletonMeta):
         self._dataset = GPTDatasetV1(
             token_ids, max_length=self._context_length, stride=self._context_length
         )
+
+    @gpt_model.setter
+    def gpt_model(self, seed_num: int):
+        self._gpt_model = GPTModelV1(seed_num)

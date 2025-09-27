@@ -1,6 +1,6 @@
 import torch
 
-from torch import Tensor
+from torch import device, Tensor
 from torch.utils.data import DataLoader
 from .config import Config
 from .text_processor import TextProcessor
@@ -45,3 +45,36 @@ class Trainer:
             for inputs, targets in val_dataloader:
                 print(inputs.shape, targets.shape)
         return train_dataloader, val_dataloader
+
+    @staticmethod
+    def _calc_loss(dataloader: DataLoader[Tensor], device: device) -> float:
+        total_loss = 0
+        for inputs, targets in dataloader:
+            inputs: Tensor = inputs.to(device)
+            targets: Tensor = targets.to(device)  # batch_size, context_length
+            logits: Tensor = Config().gpt_model(
+                inputs
+            )  # batch_size, context_length, num_embeddings
+            full_seq_loss = torch.nn.functional.cross_entropy(
+                logits.flatten(0, 1), targets.flatten()
+            ).item()
+            total_loss += full_seq_loss
+        return total_loss / len(dataloader)
+
+    @classmethod
+    def calculate_loss(
+        cls,
+        train_loader: DataLoader[Tensor],
+        val_loader: DataLoader[Tensor],
+        verbose=False,
+    ) -> tuple[float, float]:
+        config = Config()
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        config.gpt_model.to(device)
+        with torch.no_grad():
+            train_loss = cls._calc_loss(train_loader, device)
+            val_loss = cls._calc_loss(val_loader, device)
+        if verbose:
+            print("\nTraining loss:", train_loss)
+            print("Validation loss:", val_loss)
+        return train_loss, val_loss

@@ -39,7 +39,7 @@ class TestGPTModelV1:
         print("\nInputs:\n", inputs)
         assert inputs.shape[0] == batch_size
         assert inputs.shape[1] == Config().context_length
-        gpt_model_v1 = GPTModelV1()
+        gpt_model_v1 = GPTModelV1(123)
         logits = gpt_model_v1(inputs)
         print("\nShape of logits:", logits.shape)
         assert logits.shape[0] == batch_size
@@ -47,8 +47,7 @@ class TestGPTModelV1:
         assert logits.shape[2] == GPTModelConfig().num_embeddings
 
     def test_num_params_memory_size(self):
-        torch.manual_seed(123)
-        gpt_model_v1 = GPTModelV1()
+        gpt_model_v1 = GPTModelV1(123)
         total_params = sum(p.numel() for p in gpt_model_v1.parameters())
         print(f"\nTotal number of parameters: {total_params:,}")
         print("Token embedding layer shape:", Embedder.tok_emb_weight().shape)
@@ -80,7 +79,7 @@ class TestGPTModelV1:
         for model_name, embedding_dim, num_trf_blocks in name_embdim_numtrf:
             gpt_model_config.embedding_dim = embedding_dim
             gpt_model_config.num_trf_blocks = num_trf_blocks
-            gpt_model_v1 = GPTModelV1()
+            gpt_model_v1 = GPTModelV1(123)
             total_params = sum(p.numel() for p in gpt_model_v1.parameters())
             total_size_bytes = total_params * 4
             total_size_mb = total_size_bytes / (1024 * 1024)
@@ -108,7 +107,7 @@ class TestGPTModelV1:
         data_iter = iter(dataloader)
         max_new_tokens = 3
         GPTModelConfig().initizalize()
-        gpt_model_v1 = GPTModelV1().eval()  # disable dropout (no training)
+        gpt_model_v1 = GPTModelV1(123).eval()  # disable dropout (no training)
         num_batches, total_loss, sum_avg_minus_log_probas = 0, 0, 0
         for inputs, targets in data_iter:
             print("\nInputs:\n", inputs)
@@ -150,6 +149,8 @@ class TestGPTModelV1:
         config.num_workers = 0
         config.context_length = 256
         config.encoding = "gpt2"
+        config.gpt_model = config.seed_num
+        assert isinstance(config.gpt_model, GPTModelV1), "gpt-model is not GPTModelV1"
 
         script_dir = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.abspath(
@@ -160,5 +161,8 @@ class TestGPTModelV1:
         train_dataloader, val_dataloader = Trainer.create_dataloader(
             text_data, verbose=True
         )
+        train_loss, val_loss = Trainer.calculate_loss(
+            train_dataloader, val_dataloader, verbose=True
+        )
 
-        # TODO: calculate cross entropy loss
+        # TODO: pretrain GPTModelV1

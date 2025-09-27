@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 
 from ..base_gpt_model import BaseGPTModel
@@ -14,8 +15,9 @@ class GPTModelV1(BaseGPTModel):
     _final_layer_norm: BaseLayerNorm
     _output_head: nn.Linear
 
-    def __init__(self) -> None:
+    def __init__(self, seed_num: int) -> None:
         super().__init__()
+        torch.manual_seed(seed_num)
         gpt_model_config = GPTModelConfig()
         gpt_model_v1_config = GPTModelV1Config()
         self._dropout = nn.Dropout(gpt_model_config.drop_rate_emb)
