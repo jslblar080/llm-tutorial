@@ -57,9 +57,7 @@ class Main:
         input_embeddings = Embedder.input_embeddings(inputs)
         print("\nSize of input embeddings:", input_embeddings.shape)
 
-        GPTModelConfig().attention = input_embeddings
-        attention = GPTModelConfig().attention
-        context_vector_embeddings = attention(input_embeddings)
+        context_vector_embeddings = GPTModelConfig().attention(input_embeddings)
         print("\nSize of context vector embeddings:", context_vector_embeddings.shape)
 
 

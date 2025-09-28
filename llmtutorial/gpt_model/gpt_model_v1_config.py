@@ -13,6 +13,9 @@ class GPTModelV1Config(metaclass=SingletonMeta):
     _gpt_model_v1_final_layer_norm: BaseLayerNorm
 
     def __init__(self) -> None:
+        self.initialize()
+
+    def initialize(self) -> None:
         self._gpt_model_v1_trf_blocks = nn.Sequential(
             *[TransformerBlockV1() for _ in range(GPTModelConfig().num_trf_blocks)]
         )

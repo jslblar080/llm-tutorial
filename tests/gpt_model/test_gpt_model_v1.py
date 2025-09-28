@@ -7,6 +7,7 @@ from llmtutorial.config import Config
 from llmtutorial.gpt_model.embedder import Embedder
 from llmtutorial.gpt_model.gpt_model_config import GPTModelConfig
 from llmtutorial.gpt_model.gpt_model_v1 import GPTModelV1
+from llmtutorial.gpt_model.gpt_model_v1_config import GPTModelV1Config
 from llmtutorial.text_processor import TextProcessor
 from llmtutorial.trainer import Trainer
 
@@ -106,7 +107,7 @@ class TestGPTModelV1:
         )
         data_iter = iter(dataloader)
         max_new_tokens = 3
-        GPTModelConfig().initizalize()
+        GPTModelConfig().initialize()
         gpt_model_v1 = GPTModelV1(123).eval()  # disable dropout (no training)
         num_batches, total_loss, sum_avg_minus_log_probas = 0, 0, 0
         for inputs, targets in data_iter:
@@ -150,6 +151,8 @@ class TestGPTModelV1:
         config.context_length = 256
         config.encoding = "gpt2"
         config.dataset_flags.set("GPTDatasetV1")
+        GPTModelConfig().initialize()
+        GPTModelV1Config().initialize()
         config.gpt_model_flags.set("GPTModelV1")
         config.gpt_model = config.seed_num
         assert isinstance(config.gpt_model, GPTModelV1), "gpt-model is not GPTModelV1"
@@ -167,4 +170,4 @@ class TestGPTModelV1:
             train_dataloader, val_dataloader, verbose=True
         )
 
-        # TODO: pretrain GPTModelV1
+        # TODO: pretrain GPTModelV1 (trainer.py)

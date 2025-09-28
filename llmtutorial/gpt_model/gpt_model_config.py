@@ -1,4 +1,5 @@
-from torch import Tensor
+import tiktoken
+
 from .base_layer_norm import BaseLayerNorm
 from .base_transformer_block import BaseTransformerBlock
 from .layer_norm.dummy_layer_norm import DummyLayerNorm
@@ -36,17 +37,30 @@ class GPTModelConfig(metaclass=SingletonMeta):
     _dummy_gpt_model_trf_block: BaseTransformerBlock
 
     def __init__(self) -> None:
-        self.initizalize()
+        self.initialize()
 
-    def initizalize(self) -> None:
+    def initialize(self) -> None:
+        from ..config import Config
+
         self._num_embeddings = (
-            200000  # TODO: Update automatically according to Config().encoding
+            tiktoken.get_encoding(Config().encoding).encode_single_token(
+                "<|endoftext|>"
+            )
+            + 1
         )
         self._embedding_dim = 64 * 4
         self._drop_rate_emb = 0.1
         self._drop_rate_attn = 0.1
         self._drop_rate_shortcut = 0.1
         self._num_trf_blocks = 12
+        assert self._embedding_dim % 64 == 0, "_embedding_dim must be divisible by 64"
+        self._attention = MultiHeadAttention(
+            self.embedding_dim,
+            self.embedding_dim,
+            Config().context_length,
+            self._drop_rate_attn,
+            self._embedding_dim // 64,
+        )
 
         self._transformer_block_v1_first_layer_norm = LayerNormV1(self._embedding_dim)
         self._transformer_block_v1_second_layer_norm = LayerNormV1(self._embedding_dim)
@@ -113,15 +127,3 @@ class GPTModelConfig(metaclass=SingletonMeta):
     def num_trf_blocks(self, num_trf_blocks: int):
         assert num_trf_blocks > 0, "_num_trf_blocks must be positive"
         self._num_trf_blocks = num_trf_blocks
-
-    @attention.setter
-    def attention(self, batch_embeddings: Tensor):
-        assert batch_embeddings.ndim == 3, "batch_embeddings must be 3D"
-        assert self._embedding_dim % 64 == 0, "_embedding_dim must be divisible by 64"
-        self._attention = MultiHeadAttention(
-            batch_embeddings.shape[2],
-            batch_embeddings.shape[2],
-            batch_embeddings.shape[1],
-            self._drop_rate_attn,
-            self._embedding_dim // 64,
-        )

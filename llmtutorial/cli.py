@@ -54,7 +54,10 @@ GPT Model: {gpt_model}"""
         config.context_length = int(cxtlen)
         config.encoding = encoding
         config.dataset_flags.set(dataset)
+        GPTModelConfig().initialize()
+        GPTModelV1Config().initialize()
         config.gpt_model_flags.set(gpt_model)
+        config.gpt_model = config.seed_num
         self.succeeded = True
 
     def gptmodelconfig(self):
