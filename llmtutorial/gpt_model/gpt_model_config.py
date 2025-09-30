@@ -54,7 +54,6 @@ class GPTModelConfig(metaclass=SingletonMeta):
         self._drop_rate_attn = 0.1
         self._drop_rate_shortcut = 0.1
         self._num_trf_blocks = 12
-        assert self._embedding_dim % 64 == 0, "_embedding_dim must be divisible by 64"
         self._attention = MultiHeadAttention(
             Config().seed_num,
             self.embedding_dim,
