@@ -18,6 +18,7 @@ class MultiHeadAttention(BaseAttention):
 
     def __init__(
         self,
+        seed_num: int,
         d_in: int,
         d_out: int,
         cxt_len: int,
@@ -27,6 +28,7 @@ class MultiHeadAttention(BaseAttention):
         out_proj=True,
     ):
         super().__init__()
+        torch.manual_seed(seed_num)
         assert d_out % n_head == 0, "d_out must be divisible by n_head"
         self._n_head = n_head
         self._d_head = d_out // n_head

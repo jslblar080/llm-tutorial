@@ -152,6 +152,8 @@ class TestGPTModelV1:
         config.encoding = "gpt2"
         config.dataset_flags.set("GPTDatasetV1")
         GPTModelConfig().initialize()
+        GPTModelConfig().attention_flags.set("MultiHeadAttention")
+        GPTModelConfig().attention = config.seed_num
         GPTModelV1Config().initialize()
         config.gpt_model_flags.set("GPTModelV1")
         config.gpt_model = config.seed_num

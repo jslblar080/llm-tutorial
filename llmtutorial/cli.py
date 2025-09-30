@@ -28,7 +28,7 @@ class CLI(metaclass=SingletonMeta):
         cxtlen=256,
         encoding="gpt2",
         dataset="GPTDatasetV1",
-        gpt_model="GPTModelV1",
+        gptmodel="GPTModelV1",
     ):
         """Set parameters for config.py"""
         self.succeeded = False
@@ -42,7 +42,7 @@ Number of workers: {numworkers}
 Context length: {cxtlen}
 Encoding: {encoding}
 Dataset: {dataset}
-GPT Model: {gpt_model}"""
+GPT Model: {gptmodel}"""
         )
         config = Config()
         path_except_last = config.texts[:-1]
@@ -56,16 +56,36 @@ GPT Model: {gpt_model}"""
         config.dataset_flags.set(dataset)
         GPTModelConfig().initialize()
         GPTModelV1Config().initialize()
-        config.gpt_model_flags.set(gpt_model)
+        config.gpt_model_flags.set(gptmodel)
         config.gpt_model = config.seed_num
         self.succeeded = True
 
-    def gptmodelconfig(self):
+    def gptmodelconfig(self, attention="MultiHeadAttention"):
         """Set parameters for gpt_model_config.py"""
         self.succeeded = False
         # TODO
+        typer.echo(
+            f"""
+Attention: {attention}"""
+        )
+        config = Config()
+        gptmodelconfig = GPTModelConfig()
+        # TODO
+        gptmodelconfig.attention_flags.set(attention)
+        gptmodelconfig.attention = config.seed_num
+        GPTModelV1Config().initialize()
+        config.gpt_model = config.seed_num
+        self.succeeded = True
 
     def gptmodelv1config(self):
         """Set parameters for gpt_model_v1_config.py"""
         self.succeeded = False
         # TODO
+        config = Config()
+        gptmodelconfig = GPTModelConfig()
+        gptmodelv1config = GPTModelV1Config()
+        # TODO
+        config.gpt_model = config.seed_num
+        # self.succeeded = True
+
+    # TODO: sequential multi command

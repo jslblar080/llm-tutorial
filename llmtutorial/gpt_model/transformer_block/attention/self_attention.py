@@ -10,8 +10,9 @@ class SelfAttention(BaseAttention):
     _W_key: nn.Linear
     _W_value: nn.Linear
 
-    def __init__(self, d_in: int, d_out: int, qkv_bias=False):
+    def __init__(self, seed_num: int, d_in: int, d_out: int, qkv_bias=False):
         super().__init__()
+        torch.manual_seed(seed_num)
         # nn.Linear use optimized weight initialization scheme
         # nn.Linear effectively performs matrix multiplication when the bias units are disabled
         self._W_query = nn.Linear(d_in, d_out, bias=qkv_bias)

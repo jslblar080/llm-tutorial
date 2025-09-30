@@ -6,12 +6,14 @@ from llmtutorial.gpt_model.transformer_block.attention.multi_head_attention impo
 # pytest -sv tests/gpt_model/transformer_block/attention/test_multi_head_attention.py
 class TestMultiHeadAttention:
 
+    _seed_num = 123
     _embedding_dim = 768
     _cxt_len = 3
     _drop_rate = 0.1
 
     def test_num_params(self):
         mha = MultiHeadAttention(
+            self._seed_num,
             self._embedding_dim,
             self._embedding_dim,
             self._cxt_len,

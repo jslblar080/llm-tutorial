@@ -59,6 +59,10 @@ class Main:
 
         context_vector_embeddings = GPTModelConfig().attention(input_embeddings)
         print("\nSize of context vector embeddings:", context_vector_embeddings.shape)
+        print(
+            "\nFirst six context vector embedding elements in first sequence, last token:"
+        )
+        print(context_vector_embeddings[0, -1, :6])
 
 
 """
@@ -66,6 +70,7 @@ python -m llmtutorial
 python -m llmtutorial --help
 python -m llmtutorial config
 python -m llmtutorial config --textfile the-verdict.txt --cxtlen 256 --encoding gpt2
+python -m llmtutorial gptmodelconfig --attention MultiHeadAttention
 """
 if __name__ == "__main__":
 

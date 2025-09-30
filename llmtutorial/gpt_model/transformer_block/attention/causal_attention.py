@@ -15,6 +15,7 @@ class CausalAttention(BaseAttention):
 
     def __init__(
         self,
+        seed_num: int,
         d_in: int,
         d_out: int,
         cxt_len: int,
@@ -22,6 +23,7 @@ class CausalAttention(BaseAttention):
         qkv_bias=False,
     ):
         super().__init__()
+        torch.manual_seed(seed_num)
         self._W_query = nn.Linear(d_in, d_out, bias=qkv_bias)
         self._W_key = nn.Linear(d_in, d_out, bias=qkv_bias)
         self._W_value = nn.Linear(d_in, d_out, bias=qkv_bias)
