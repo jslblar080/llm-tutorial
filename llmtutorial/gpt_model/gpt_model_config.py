@@ -38,6 +38,20 @@ class GPTModelConfig(metaclass=SingletonMeta):
     _dummy_gpt_model_trf_block: BaseTransformerBlock
 
     def __init__(self) -> None:
+        self._embedding_dim = 64 * 4
+        self._drop_rate_emb = 0.1
+        self._drop_rate_attn = 0.1
+        self._drop_rate_shortcut = 0.1
+        self._num_trf_blocks = 12
+        self._attention_flags = OneHotDict(
+            (
+                "SimplifiedSelfAttention",
+                "SelfAttention",
+                "CausalAttention",
+                "MultiHeadAttention",
+            )
+        )
+        self._attention_flags.set("MultiHeadAttention")
         self.initialize()
 
     def initialize(self) -> None:
@@ -49,28 +63,14 @@ class GPTModelConfig(metaclass=SingletonMeta):
             )
             + 1
         )
-        self._embedding_dim = 64 * 4
-        self._drop_rate_emb = 0.1
-        self._drop_rate_attn = 0.1
-        self._drop_rate_shortcut = 0.1
-        self._num_trf_blocks = 12
         self._attention = MultiHeadAttention(
             Config().seed_num,
-            self.embedding_dim,
-            self.embedding_dim,
+            self._embedding_dim,
+            self._embedding_dim,
             Config().context_length,
             self._drop_rate_attn,
             self._embedding_dim // 64,
         )
-        self._attention_flags = OneHotDict(
-            (
-                "SimplifiedSelfAttention",
-                "SelfAttention",
-                "CausalAttention",
-                "MultiHeadAttention",
-            )
-        )
-        self._attention_flags.set("MultiHeadAttention")
 
         self._transformer_block_v1_first_layer_norm = LayerNormV1(self._embedding_dim)
         self._transformer_block_v1_second_layer_norm = LayerNormV1(self._embedding_dim)

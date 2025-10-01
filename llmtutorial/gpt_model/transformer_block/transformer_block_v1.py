@@ -1,3 +1,4 @@
+import copy
 import torch.nn as nn
 
 from .base_attention import BaseAttention
@@ -18,11 +19,15 @@ class TransformerBlockV1(BaseTransformerBlock):
     def __init__(self):
         super().__init__()
         gpt_model_config = GPTModelConfig()
-        self._norm1 = gpt_model_config.transformer_block_v1_first_layer_norm
-        self._att = gpt_model_config.attention
+        self._norm1 = copy.deepcopy(
+            gpt_model_config.transformer_block_v1_first_layer_norm
+        )
+        self._att = copy.deepcopy(gpt_model_config.attention)
         self._drop_shortcut = nn.Dropout(gpt_model_config.drop_rate_shortcut)
-        self._norm2 = gpt_model_config.transformer_block_v1_second_layer_norm
-        self._ffn = gpt_model_config.transformer_block_v1_feed_forward
+        self._norm2 = copy.deepcopy(
+            gpt_model_config.transformer_block_v1_second_layer_norm
+        )
+        self._ffn = copy.deepcopy(gpt_model_config.transformer_block_v1_feed_forward)
 
     def forward(self, x):
         shortcut = x

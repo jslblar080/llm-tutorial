@@ -68,6 +68,7 @@ class TestGPTModelV1:
         total_size_mb = total_size_bytes / (1024 * 1024)
         print(f"Total size of the model: {total_size_mb:.2f} MB")
 
+    # pytest -sv tests/gpt_model/test_gpt_model_v1.py::TestGPTModelV1::test_gpt_model_config
     def test_gpt_model_config(self):
         name_embdim_numtrf = (
             ("GPT-small", 768, 12),
@@ -75,13 +76,23 @@ class TestGPTModelV1:
             ("GPT-large", 1280, 36),
             ("GPT-XL", 1600, 48),
         )
-        gpt_model_config = GPTModelConfig()
         print()
+        config = Config()
+        config.seed_num = 123
+        config.context_length = 1024
+        config.encoding = "gpt2"
         for model_name, embedding_dim, num_trf_blocks in name_embdim_numtrf:
-            gpt_model_config.embedding_dim = embedding_dim
-            gpt_model_config.num_trf_blocks = num_trf_blocks
-            gpt_model_v1 = GPTModelV1(123)
-            total_params = sum(p.numel() for p in gpt_model_v1.parameters())
+            GPTModelConfig().embedding_dim = embedding_dim
+            GPTModelConfig().num_trf_blocks = num_trf_blocks
+            GPTModelConfig().initialize()
+            GPTModelConfig().attention_flags.set("MultiHeadAttention")
+            GPTModelConfig().attention = config.seed_num
+            GPTModelV1Config().initialize()
+            config.gpt_model_flags.set("GPTModelV1")
+            config.gpt_model = config.seed_num
+            print()
+            total_params = sum(p.numel() for p in config.gpt_model.parameters())
+            print(f"Total number of parameters: {total_params:,}")
             total_size_bytes = total_params * 4
             total_size_mb = total_size_bytes / (1024 * 1024)
             print(f"Total size of {model_name}: {total_size_mb:.2f} MB")
@@ -95,6 +106,7 @@ class TestGPTModelV1:
         token_ids = TextProcessor.tokenize(
             texts, verbose=False, id_end=True, pair=False
         )
+        Config().initialize()
         Config().dataset = token_ids
         dataset = Config().dataset
         batch_size = 3
@@ -108,6 +120,7 @@ class TestGPTModelV1:
         data_iter = iter(dataloader)
         max_new_tokens = 3
         GPTModelConfig().initialize()
+        GPTModelV1Config().initialize()
         gpt_model_v1 = GPTModelV1(123).eval()  # disable dropout (no training)
         num_batches, total_loss, sum_avg_minus_log_probas = 0, 0, 0
         for inputs, targets in data_iter:
@@ -151,6 +164,8 @@ class TestGPTModelV1:
         config.context_length = 256
         config.encoding = "gpt2"
         config.dataset_flags.set("GPTDatasetV1")
+        GPTModelConfig().embedding_dim = 768
+        GPTModelConfig().num_trf_blocks = 12
         GPTModelConfig().initialize()
         GPTModelConfig().attention_flags.set("MultiHeadAttention")
         GPTModelConfig().attention = config.seed_num

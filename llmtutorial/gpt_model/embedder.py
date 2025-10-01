@@ -5,7 +5,24 @@ from torch import Tensor
 from .gpt_model_config import GPTModelConfig
 
 
-class Embedder:
+class Embedder(nn.Module):
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._token_emb_layer = nn.Embedding(
+            GPTModelConfig().num_embeddings, GPTModelConfig().embedding_dim
+        )
+        from ..config import Config
+
+        self._pos_emb_layer = nn.Embedding(
+            Config().context_length, GPTModelConfig().embedding_dim
+        )
+
+    def forward(self, x):
+        batch_size, cxt_len = x.shape
+        token_embeddings = self._token_emb_layer(x)
+        pos_embeddings = self._pos_emb_layer(torch.arange(cxt_len, device=x.device))
+        return token_embeddings + pos_embeddings
 
     @staticmethod
     def _token_layer() -> nn.Embedding:
