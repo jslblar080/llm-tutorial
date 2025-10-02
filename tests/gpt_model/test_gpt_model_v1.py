@@ -183,8 +183,6 @@ class TestGPTModelV1:
         train_dataloader, val_dataloader = Trainer.create_dataloader(
             text_data, verbose=True
         )
-        train_loss, val_loss = Trainer.calculate_loss(
-            train_dataloader, val_dataloader, verbose=True
-        )
+        Trainer.show_raw_loss(train_dataloader, val_dataloader)
 
         # TODO: pretrain GPTModelV1 (trainer.py)

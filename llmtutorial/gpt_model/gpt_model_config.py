@@ -30,6 +30,7 @@ class GPTModelConfig(metaclass=SingletonMeta):
     _drop_rate_shortcut: float
     _num_trf_blocks: int
     _attention: BaseAttention
+    _attention_flags: OneHotDict
 
     _transformer_block_v1_first_layer_norm: BaseLayerNorm
     _transformer_block_v1_second_layer_norm: BaseLayerNorm
