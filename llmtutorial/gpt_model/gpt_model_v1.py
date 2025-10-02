@@ -20,9 +20,9 @@ class GPTModelV1(BaseGPTModel):
     def __init__(self, seed_num: int) -> None:
         super().__init__()
         torch.manual_seed(seed_num)
-        self._emb = Embedder()
         gpt_model_config = GPTModelConfig()
         gpt_model_v1_config = GPTModelV1Config()
+        self._emb = copy.deepcopy(gpt_model_v1_config.gpt_model_v1_embedder)
         self._dropout = nn.Dropout(gpt_model_config.drop_rate_emb)
         self._trf_blocks = copy.deepcopy(gpt_model_v1_config.gpt_model_v1_trf_blocks)
         self._final_layer_norm = copy.deepcopy(
