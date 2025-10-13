@@ -1,4 +1,8 @@
+import matplotlib.pyplot as plt
 import numpy as np
+import os
+
+from PIL import Image
 from typing import Callable, TypeAlias
 
 
@@ -48,3 +52,46 @@ class TestLinearAlgebraLearning:
         assert not self.LinearityTester(*non_linear_system_1).check_linearity()
         non_linear_system_2 = lambda x: 2 * x + 3, "T(x) = 2 * x + 3"
         assert not self.LinearityTester(*non_linear_system_2).check_linearity()
+
+    def test_singular_value_decomposition(self):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, "assets", "cafe_rooted.jpeg")
+        pic = Image.open(file_path).convert("L")  # "L" = 8-bit grayscale
+        pic = np.array(pic)
+        save_path_1 = os.path.join(script_dir, "outputs", "cafe_rooted_grayscale.png")
+        plt.imsave(save_path_1, pic, cmap="gray")
+        plt.close()
+        """
+        SVD (singular value decomposition)
+        """
+        U, S, V = np.linalg.svd(pic)
+        plt.plot(S, "s-")
+        plt.xlim([0, 50])
+        plt.xlabel("Component number")
+        plt.ylabel("Singular value")
+        save_path_2 = os.path.join(script_dir, "outputs", "cafe_rooted_scree_plot.png")
+        plt.savefig(save_path_2)
+        plt.close()
+        """
+        Low-rank approximation
+        """
+        for start_comp, num_comps in (
+            (0, 10),
+            (0, 20),
+            (0, 30),
+            (0, 40),
+            (0, 50),
+            (20, 130),
+        ):
+            comps = np.arange(start_comp, num_comps)
+            recon_pic = U[:, comps] @ np.diag(S[comps]) @ V[comps, :]
+            recon_pic_title = (
+                "cafe_rooted_comp_"
+                + str(start_comp)
+                + "-"
+                + str(start_comp + num_comps - 1)
+                + ".png"
+            )
+            save_path_3 = os.path.join(script_dir, "outputs", recon_pic_title)
+            plt.imsave(save_path_3, recon_pic, cmap="gray")
+            plt.close()
