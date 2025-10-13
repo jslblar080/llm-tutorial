@@ -245,7 +245,7 @@ class TestPytorchLearning:
         num_epochs = 3  # epoch: tuning with loss convergence
         print()
         for epoch in range(num_epochs):
-            model.train()  # necessary for dropout or batch normalization layers
+            model.train()  # Dropout active && batch statistics
             for batch_idx, (features, labels) in enumerate(train_loader):
                 logits = model(features)  # forward
                 loss = F.cross_entropy(logits, labels)
@@ -257,7 +257,7 @@ class TestPytorchLearning:
                     f" | Batch {batch_idx:03d}/{len(train_loader):03d}"
                     f" | Train/Val Loss: {loss:.2f}"
                 )
-            model.eval()  # necessary for dropout or batch normalization layers
+            model.eval()  # Dropout inactive && global statistics
         torch.testing.assert_close(
             type(self).compute_accuracy(model, train_loader), 1.0
         )
