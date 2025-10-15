@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import torch
 
+from mpl_toolkits.mplot3d import Axes3D
 from PIL import Image
 from typing import Callable, TypeAlias
 
@@ -95,3 +97,30 @@ class TestLinearAlgebraLearning:
             save_path_3 = os.path.join(script_dir, "outputs", recon_pic_title)
             plt.imsave(save_path_3, recon_pic, cmap="gray")
             plt.close()
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_3d_vector_transpose_plot
+    def test_3d_vector_transpose_plot(self):
+        """
+        3-dimensional vector
+        """
+        v3_tensor = torch.tensor([4, -3, 2])
+        v3t_np = np.transpose(v3_tensor.numpy())
+        v3tT_np = v3t_np.T
+        assert np.array_equal(v3tT_np, v3_tensor.numpy())
+        assert torch.equal(torch.tensor(v3tT_np), v3_tensor)
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+        assert isinstance(ax, Axes3D), f"Expected a 3D Axes, got {type(ax)} instead."
+        ax.plot(
+            [0, v3tT_np[0]], [0, v3tT_np[1]], [0, v3tT_np[2]], color="r", linewidth=2
+        )
+        ax.plot([-4, 4], [0, 0], [0, 0], "k--")
+        ax.plot([0, 0], [-4, 4], [0, 0], "k--")
+        ax.plot([0, 0], [0, 0], [-4, 4], "k--")
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_zlabel("Z")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        save_path = os.path.join(script_dir, "outputs", "3d_vector_example.png")
+        plt.savefig(save_path)
+        plt.close()
