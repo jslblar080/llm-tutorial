@@ -205,3 +205,30 @@ class TestLinearAlgebraLearning:
         )
         plt.savefig(save_path)
         plt.close()
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_dot_product_property
+    def test_dot_product_property(self):
+        n = 10
+        v1 = np.random.rand(n)
+        v2 = np.random.rand(n)
+        dp1 = np.dot(v1, v2)
+        dp2 = np.matmul(v1, v2)
+        dp3 = sum(np.multiply(v1, v2))
+        dp4 = 0
+        for i in range(0, len(v1)):
+            dp4 = dp4 + v1[i] * v2[i]
+        assert np.isclose(dp1, dp2, dp3, dp4)
+        """
+        dot product is distributive
+        """
+        v3 = np.random.rand(n)
+        res1 = np.dot(v1, (v2 + v3))
+        res2 = np.dot(v1, v2) + np.dot(v1, v3)
+        assert np.isclose(res1, res2)
+        """
+        dot product is not associative
+        unless one vector is zeros vector or all vectors are same
+        """
+        res1 = np.dot(v1, np.dot(v2, v3))
+        res2 = np.dot(np.dot(v1, v2), v3)
+        assert not np.allclose(res1, res2)
