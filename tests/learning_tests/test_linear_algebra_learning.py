@@ -124,3 +124,47 @@ class TestLinearAlgebraLearning:
         save_path = os.path.join(script_dir, "outputs", "3d_vector_example.png")
         plt.savefig(save_path)
         plt.close()
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_vector_addition
+    def test_vector_addition(self):
+        origin = np.array([0, 0])
+        v1 = np.array([3, -1])
+        v2 = np.array([2, 4])
+        v1_plus_v2 = v1 + v2  # list just concatenates with +
+        plt.quiver(
+            *origin,
+            *v1,
+            angles="xy",
+            scale_units="xy",
+            scale=1,
+            color="b",
+            label="v1",
+        )
+        plt.quiver(
+            *v1,
+            *v2,
+            angles="xy",
+            scale_units="xy",
+            scale=1,
+            color="r",
+            label="v2",
+        )
+        plt.quiver(
+            *origin,
+            *v1_plus_v2,
+            angles="xy",
+            scale_units="xy",
+            scale=1,
+            color="k",
+            label="v1 + v2",
+        )
+        plt.legend()
+        plt.axis("equal")
+        plt.xlim(-1, 7)
+        plt.ylim(-3, 7)
+        plt.grid()
+        plt.title("Vector Addition: v1 + v2")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        save_path = os.path.join(script_dir, "outputs", "2d_vector_addition.png")
+        plt.savefig(save_path)
+        plt.close()
