@@ -232,3 +232,9 @@ class TestLinearAlgebraLearning:
         res1 = np.dot(v1, np.dot(v2, v3))
         res2 = np.dot(np.dot(v1, v2), v3)
         assert not np.allclose(res1, res2)
+        """
+        dot product is commutative
+        """
+        res1 = np.dot(v1, v2)
+        res2 = np.dot(v2, v1)
+        assert np.isclose(res1, res2)
