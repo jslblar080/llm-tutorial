@@ -57,6 +57,7 @@ class TestLinearAlgebraLearning:
 
     def test_singular_value_decomposition(self):
         script_dir = os.path.dirname(os.path.abspath(__file__))
+        os.makedirs(os.path.join(script_dir, "outputs"), exist_ok=True)
         file_path = os.path.join(script_dir, "assets", "cafe_rooted.jpeg")
         pic = Image.open(file_path).convert("L")  # "L" = 8-bit grayscale
         pic = np.array(pic)
@@ -121,6 +122,7 @@ class TestLinearAlgebraLearning:
         ax.set_ylabel("Y")
         ax.set_zlabel("Z")
         script_dir = os.path.dirname(os.path.abspath(__file__))
+        os.makedirs(os.path.join(script_dir, "outputs"), exist_ok=True)
         save_path = os.path.join(script_dir, "outputs", "3d_vector_example.png")
         plt.savefig(save_path)
         plt.close()
@@ -165,6 +167,7 @@ class TestLinearAlgebraLearning:
         plt.grid()
         plt.title("Vector Addition: v1 + v2")
         script_dir = os.path.dirname(os.path.abspath(__file__))
+        os.makedirs(os.path.join(script_dir, "outputs"), exist_ok=True)
         save_path = os.path.join(script_dir, "outputs", "2d_vector_addition.png")
         plt.savefig(save_path)
         plt.close()
@@ -200,6 +203,7 @@ class TestLinearAlgebraLearning:
         plt.grid()
         plt.title("Vector Scalar Multiplication: scalar * v")
         script_dir = os.path.dirname(os.path.abspath(__file__))
+        os.makedirs(os.path.join(script_dir, "outputs"), exist_ok=True)
         save_path = os.path.join(
             script_dir, "outputs", "2d_vector_scalar_multiplication.png"
         )
