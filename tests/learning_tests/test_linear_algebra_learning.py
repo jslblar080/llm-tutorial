@@ -292,3 +292,16 @@ class TestLinearAlgebraLearning:
             np.abs(np.dot(v1, v1_scaled)),
             np.linalg.norm(v1) * np.linalg.norm(v1_scaled),
         )
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_outer_product
+    def test_outer_product(self):
+        d1 = 3
+        d2 = 4
+        v1 = np.random.randn(d1)
+        v2 = np.random.randn(d2)
+        op1 = np.outer(v1, v2)
+        op2 = np.zeros((d1, d2))
+        for i in range(d1):
+            for j in range(d2):
+                op2[i, j] = v1[i] * v2[j]
+        assert np.allclose(op1, op2)
