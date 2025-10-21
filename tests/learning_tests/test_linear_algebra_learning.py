@@ -217,6 +217,9 @@ class TestLinearAlgebraLearning:
         v2 = np.random.rand(n)
         dp1 = np.dot(v1, v2)
         dp2 = np.matmul(v1, v2)
+        """
+        sum of vector hadamard (element-wise) multiplication
+        """
         dp3 = sum(np.multiply(v1, v2))
         dp4 = 0
         for i in range(0, len(v1)):
