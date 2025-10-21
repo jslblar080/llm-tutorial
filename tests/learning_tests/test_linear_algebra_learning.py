@@ -271,3 +271,21 @@ class TestLinearAlgebraLearning:
         save_path = os.path.join(script_dir, "outputs", "3d_vector_dot_product.png")
         plt.savefig(save_path)
         plt.close()
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_cauchy_schwarz_inequality
+    def test_cauchy_schwarz_inequality(self):
+        n = np.random.randint(100)
+        v1 = np.random.randn(n)
+        v2 = np.random.randn(n)
+        """
+        inequality
+        """
+        assert np.abs(np.dot(v1, v2)) < np.linalg.norm(v1) * np.linalg.norm(v2)
+        v1_scaled = np.random.randn(1) * v1
+        """
+        equality
+        """
+        assert np.isclose(
+            np.abs(np.dot(v1, v1_scaled)),
+            np.linalg.norm(v1) * np.linalg.norm(v1_scaled),
+        )
