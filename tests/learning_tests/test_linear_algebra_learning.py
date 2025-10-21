@@ -242,3 +242,11 @@ class TestLinearAlgebraLearning:
         res1 = np.dot(v1, v2)
         res2 = np.dot(v2, v1)
         assert np.isclose(res1, res2)
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_vector_length_norm
+    def test_vector_length_norm(self):
+        n = 10
+        v = np.random.rand(n)
+        vl1 = np.sqrt(np.dot(v, v))
+        vl2 = np.linalg.norm(v)
+        assert np.isclose(vl1, vl2)
