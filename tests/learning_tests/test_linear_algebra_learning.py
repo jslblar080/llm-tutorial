@@ -250,3 +250,24 @@ class TestLinearAlgebraLearning:
         vl1 = np.sqrt(np.dot(v, v))
         vl2 = np.linalg.norm(v)
         assert np.isclose(vl1, vl2)
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_dot_product_geometry
+    def test_dot_product_geometry(self):
+        v1 = np.array([2, 4, -3])
+        v2 = np.array([0, -3, -3])
+        # arccos: inverse of cosine
+        ang = np.arccos(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+        assert isinstance(ax, Axes3D), f"Expected a 3D Axes, got {type(ax)} instead."
+        ax.plot([0, v1[0]], [0, v1[1]], [0, v1[2]], color="b", linewidth=2)
+        ax.plot([0, v2[0]], [0, v2[1]], [0, v2[2]], color="r", linewidth=2)
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_zlabel("Z")
+        plt.title(f"Angle between vectors: {ang} rad.")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        os.makedirs(os.path.join(script_dir, "outputs"), exist_ok=True)
+        save_path = os.path.join(script_dir, "outputs", "3d_vector_dot_product.png")
+        plt.savefig(save_path)
+        plt.close()
