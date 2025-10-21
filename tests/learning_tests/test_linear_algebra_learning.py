@@ -305,3 +305,31 @@ class TestLinearAlgebraLearning:
             for j in range(d2):
                 op2[i, j] = v1[i] * v2[j]
         assert np.allclose(op1, op2)
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_vector_cross_product
+    def test_vector_cross_product(self):
+        v1 = np.array([-3, 2, 5])
+        v2 = np.array([4, -3, 0])
+        v3a = np.cross(v1, v2)
+        v3b = np.array(
+            [
+                v1[1] * v2[2] - v1[2] * v2[1],
+                v1[2] * v2[0] - v1[0] * v2[2],
+                v1[0] * v2[1] - v1[1] * v2[0],
+            ]
+        )
+        assert np.allclose(v3a, v3b)
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+        assert isinstance(ax, Axes3D), f"Expected a 3D Axes, got {type(ax)} instead."
+        ax.plot([0, v1[0]], [0, v1[1]], [0, v1[2]], color="k", linewidth=2)
+        ax.plot([0, v2[0]], [0, v2[1]], [0, v2[2]], color="k", linewidth=2)
+        ax.plot([0, v3a[0]], [0, v3a[1]], [0, v3a[2]], color="r", linewidth=2)
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_zlabel("Z")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        os.makedirs(os.path.join(script_dir, "outputs"), exist_ok=True)
+        save_path = os.path.join(script_dir, "outputs", "3d_vector_cross_product.png")
+        plt.savefig(save_path)
+        plt.close()
