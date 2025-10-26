@@ -333,3 +333,10 @@ class TestLinearAlgebraLearning:
         save_path = os.path.join(script_dir, "outputs", "3d_vector_cross_product.png")
         plt.savefig(save_path)
         plt.close()
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_hermitian_transpose
+    def test_hermitian_transpose(self):
+        z = np.array([3, 4j, 5 + 2j, 2 - 5j])
+        z_H_z = np.transpose(np.conjugate(z)) * z
+        assert np.allclose(z_H_z, np.array([9, 16, 29, 29]))
+        print(z_H_z)
