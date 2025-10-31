@@ -340,3 +340,38 @@ class TestLinearAlgebraLearning:
         z_H_z = np.transpose(np.conjugate(z)) * z
         assert np.allclose(z_H_z, np.array([9, 16, 29, 29]))
         print(z_H_z)
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_unit_vector
+    def test_unit_vector(self):
+        origin = np.array([0, 0])
+        v = np.array([-3, 6])
+        mu = 1 / np.linalg.norm(v)
+        unit_v = v * mu
+        plt.quiver(
+            *origin,
+            *v,
+            angles="xy",
+            scale_units="xy",
+            scale=1,
+            color="b",
+            label="v",
+        )
+        plt.quiver(
+            *origin,
+            *unit_v,
+            angles="xy",
+            scale_units="xy",
+            scale=1,
+            color="r",
+            label="unit_v",
+        )
+        plt.legend()
+        plt.axis("square")
+        plt.xlim(-6, 6)
+        plt.ylim(-6, 6)
+        plt.grid()
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        os.makedirs(os.path.join(script_dir, "outputs"), exist_ok=True)
+        save_path = os.path.join(script_dir, "outputs", "unit_vector.png")
+        plt.savefig(save_path)
+        plt.close()
