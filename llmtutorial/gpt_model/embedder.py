@@ -22,6 +22,9 @@ class Embedder(nn.Module):
         batch_size, cxt_len = x.shape
         token_embeddings = self._token_emb_layer(x)
         pos_embeddings = self._pos_emb_layer(torch.arange(cxt_len, device=x.device))
+        """
+        broadcasting applies positional embeddings across batch size (add to every sequence)
+        """
         return token_embeddings + pos_embeddings
 
     @staticmethod
