@@ -375,3 +375,15 @@ class TestLinearAlgebraLearning:
         save_path = os.path.join(script_dir, "outputs", "unit_vector.png")
         plt.savefig(save_path)
         plt.close()
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_matrix_multiplication_via_layers
+    def test_matrix_multiplication_via_layers(self):
+        A = np.random.randn(3, 4)
+        B = np.random.randn(4, 6)
+        spectral = np.zeros((A.shape[0], B.shape[1]))
+        inner_dim = A.shape[1]
+        assert inner_dim == B.shape[0]
+        for i in range(A.shape[1]):
+            spectral += np.outer(A[:, i], B[i, :])
+        print(spectral)
+        assert np.allclose(spectral, A @ B)
