@@ -387,3 +387,11 @@ class TestLinearAlgebraLearning:
             spectral += np.outer(A[:, i], B[i, :])
         print(spectral)
         assert np.allclose(spectral, A @ B)
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_standard_hadamard_matrix_multiplication_diagonal_matrix
+    def test_standard_hadamard_matrix_multiplication_diagonal_matrix(self):
+        n = 100
+        F = np.random.randn(n, n)
+        D = np.diag(np.random.randn(n))
+        assert not np.allclose(F @ F, F * F)
+        assert np.allclose(D @ D, D * D)
