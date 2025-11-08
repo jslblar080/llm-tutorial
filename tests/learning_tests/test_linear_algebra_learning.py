@@ -43,6 +43,21 @@ class TestLinearAlgebraLearning:
             print("Linearity:", is_linear)
             return is_linear
 
+    @staticmethod
+    def tensor_from(
+        shape: tuple[int, ...], formula: Callable, dtype=float
+    ) -> np.ndarray:
+        """
+        list of all 1’s, but replace the axis entry with size
+        """
+        axes = [
+            np.arange(size, dtype=dtype).reshape(
+                *((1,) * axis + (size,) + (1,) * (len(shape) - axis - 1))
+            )
+            for axis, size in enumerate(shape)
+        ]
+        return formula(*axes)
+
     def test_linearity(self):
         linear_system_1 = lambda x: 2 * x, "T(x) = 2 * x"
         assert self.LinearityTester(*linear_system_1).check_linearity()
@@ -395,3 +410,69 @@ class TestLinearAlgebraLearning:
         D = np.diag(np.random.randn(n))
         assert not np.allclose(F @ F, F * F)
         assert np.allclose(D @ D, D * D)
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_discrete_fourier_transform
+    def test_discrete_fourier_transform(self):
+        """
+        DFT (Discrete Fourier Transform): determine frequency content of discrete-time signal
+        """
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        os.makedirs(os.path.join(script_dir, "outputs"), exist_ok=True)
+        N = 64
+        t = np.arange(N)
+        T1, T2 = 8, 16
+        signal = np.sin(2 * np.pi * t / T1) + 0.5 * np.sin(2 * np.pi * t / T2)
+        np.random.seed(123)
+        noise = 0.3 * np.random.randn(N)
+        """
+        x: discrete-time signal vector with noise
+           (all elements are real numbers in this case)
+        """
+        x = signal + noise
+        plt.plot(t, x, label="discrete-time signal with noise")
+        plt.legend()
+        save_path = os.path.join(
+            script_dir, "outputs", "DFT_discrete_time_signal_with_noise.png"
+        )
+        plt.savefig(save_path)
+        plt.close()
+        """
+        F: DFT matrix (N x N)
+        """
+        F = self.tensor_from(
+            (N, N), lambda k, n: np.exp(1) ** (-2j * np.pi * k * n / N)
+        )
+        X = F @ x
+        assert np.allclose(X, np.fft.fft(x))
+        plt.stem(np.abs(X))
+        plt.title("Magnitude Spectrum")
+        """
+        x consists only of real numbers
+        -> magnitude spectrum (norm of X) is conjugate symmetric about k = N/2
+        """
+        save_path = os.path.join(script_dir, "outputs", "DFT_magnitude_spectrum.png")
+        plt.savefig(save_path)
+        plt.close()
+        """
+        filter out all DFT indices except those (k2, k1)
+        corresponding to first and second largest magnitudes in spectrum
+        """
+        X_filtered = np.zeros_like(X)
+        k1, k2 = int(N / T1), int(N / T2)
+        X_filtered[k2] = X[k2]
+        X_filtered[k1] = X[k1]
+        X_filtered[N - k1] = X[N - k1]
+        X_filtered[N - k2] = X[N - k2]
+        """
+        IDFT (Inverse Discrete Fourier Transform)
+        """
+        x_filtered = np.real(np.conj(F.T) @ X_filtered / N)
+        assert np.allclose(
+            x_filtered, np.fft.ifft(X_filtered)
+        )  # np.fft.ifft(X_filtered).real
+        plt.plot(t, x, label="original signal with noise")
+        plt.plot(t, x_filtered, label="filtered signal")
+        plt.legend()
+        save_path = os.path.join(script_dir, "outputs", "DFT_filtered_signal.png")
+        plt.savefig(save_path)
+        plt.close()
