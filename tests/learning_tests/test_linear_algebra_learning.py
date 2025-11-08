@@ -448,7 +448,7 @@ class TestLinearAlgebraLearning:
         plt.title("Magnitude Spectrum")
         """
         x consists only of real numbers
-        -> magnitude spectrum (norm of X) is conjugate symmetric about k = N/2
+        -> magnitude spectrum (|X|) is conjugate symmetric about k = N/2
         """
         save_path = os.path.join(script_dir, "outputs", "DFT_magnitude_spectrum.png")
         plt.savefig(save_path)
