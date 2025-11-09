@@ -476,3 +476,30 @@ class TestLinearAlgebraLearning:
         save_path = os.path.join(script_dir, "outputs", "DFT_filtered_signal.png")
         plt.savefig(save_path)
         plt.close()
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_frobenius_dot_product
+    def test_frobenius_dot_product(self):
+        m, n = 9, 4
+        A = np.random.randn(m, n)
+        B = np.random.randn(m, n)
+        print()
+        """
+        total sum of hadamard matrix multiplication
+        """
+        frob_dp1 = np.sum(A * B)
+        print(frob_dp1)
+        """
+        vectorize -> dot product
+        """
+        a = np.reshape(A, (m * n))
+        b = np.reshape(B, (m * n))
+        frob_dp2 = np.dot(a, b)
+        print(frob_dp2)
+        assert np.isclose(frob_dp1, frob_dp2)
+        """
+        transpose-trace
+        """
+        frob_dp3 = np.trace(A.T @ B)
+        print(frob_dp3)
+        assert np.isclose(frob_dp3, np.trace(B.T @ A))
+        assert np.isclose(frob_dp1, frob_dp3)
