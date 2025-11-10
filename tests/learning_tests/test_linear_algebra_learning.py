@@ -58,6 +58,19 @@ class TestLinearAlgebraLearning:
         ]
         return formula(*axes)
 
+    @staticmethod
+    def calc_mai(mat: np.ndarray) -> float:
+        assert not np.all(mat == 0)
+        anti_mat = (mat - mat.T) / 2
+        """
+        matrix asymmetry index
+
+        symmetric matrix -> 0 
+        skew-symmetric matrix -> 1
+        """
+        mai = float(np.linalg.norm(anti_mat) / np.linalg.norm(mat))
+        return mai
+
     def test_linearity(self):
         linear_system_1 = lambda x: 2 * x, "T(x) = 2 * x"
         assert self.LinearityTester(*linear_system_1).check_linearity()
@@ -503,3 +516,16 @@ class TestLinearAlgebraLearning:
         print(frob_dp3)
         assert np.isclose(frob_dp3, np.trace(B.T @ A))
         assert np.isclose(frob_dp1, frob_dp3)
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_matrix_asymmetry_index
+    def test_matrix_asymmetry_index(self):
+        n = 5
+        A = np.random.randn(n, n)
+        assert 0 <= self.calc_mai(A) <= 1
+        sym_A = (A + A.T) / 2
+        assert self.calc_mai(sym_A) == 0
+        skew_sym_A = (A - A.T) / 2
+        assert self.calc_mai(skew_sym_A) == 1
+        p = np.random.rand()
+        B = (1 - p) * (A + A.T) + p * (A - A.T)
+        assert 0 <= self.calc_mai(B) <= 1
