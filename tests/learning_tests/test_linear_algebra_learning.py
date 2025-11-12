@@ -529,3 +529,29 @@ class TestLinearAlgebraLearning:
         p = np.random.rand()
         B = (1 - p) * (A + A.T) + p * (A - A.T)
         assert 0 <= self.calc_mai(B) <= 1
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_rank_computation
+    def test_rank_computation(self):
+        m, n = 4, 6
+        A = np.random.randn(m, n)
+        rank_A = np.linalg.matrix_rank(A)
+        print(f"\nrank(A): {rank_A}")
+        assert rank_A == min([m, n])
+        B = A
+        B[:, -1] = B[:, -2]
+        rank_B = np.linalg.matrix_rank(B)
+        print(f"rank(B): {rank_B}")
+        assert rank_B == min([m, n - 1])
+        C = A
+        C[-1, :] = C[-2, :]
+        rank_C = np.linalg.matrix_rank(C)
+        print(f"rank(C): {rank_C}")
+        assert rank_C == min([m - 1, n])
+        F = np.round(10 * np.random.randn(m, m))
+        F[:, -1] = F[:, -2]
+        noiseamp = 0.000001
+        F_noise_add = F + noiseamp * np.random.randn(m, m)
+        print(f"reduced rank without noise: {np.linalg.matrix_rank(F)}")
+        print(f"reduced rank with noise added: {np.linalg.matrix_rank(F_noise_add)}")
+        assert np.linalg.matrix_rank(F) == m - 1
+        assert np.linalg.matrix_rank(F_noise_add) == m
