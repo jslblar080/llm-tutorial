@@ -578,3 +578,19 @@ class TestLinearAlgebraLearning:
         assert np.linalg.matrix_rank(C @ C.T) == np.linalg.matrix_rank(C)
         assert np.linalg.matrix_rank(C) == np.linalg.matrix_rank(C.T)
         assert np.linalg.matrix_rank(C.T) == np.linalg.matrix_rank(C.T @ C)
+        """
+        determine whether vector(v) is in span of set(S or T) via augmentation
+        """
+        v = np.array([1, 2, 3, 4])
+        print()
+        for set_name, set in (
+            ("S", np.array([[4, 3, 6, 2], [0, 4, 0, 1]])),
+            ("T", np.array([[1, 2, 2, 2], [0, 0, 1, 2]])),
+        ):
+            set_stacked = np.vstack([set, v])
+            if np.linalg.matrix_rank(set_stacked) == 3:
+                print(f"vector v {v}\nis not in span of set {set_name}\n{set}")
+            elif np.linalg.matrix_rank(set_stacked) < 3:
+                print(f"vector v {v}\nis in span of set {set_name}\n{set}")
+            else:
+                return
