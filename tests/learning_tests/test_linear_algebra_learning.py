@@ -555,3 +555,12 @@ class TestLinearAlgebraLearning:
         print(f"reduced rank with noise added: {np.linalg.matrix_rank(F_noise_add)}")
         assert np.linalg.matrix_rank(F) == m - 1
         assert np.linalg.matrix_rank(F_noise_add) == m
+        """
+        mxn matrix with reduced-rank r via multiplication
+        rank(A @ B) <= min(rank(A), rank(B))
+        """
+        m, n = np.random.randint(51, 100, size=2)
+        r = np.random.randint(1, 50)
+        A = np.random.randn(m, r)
+        B = np.random.randn(r, n)
+        assert np.linalg.matrix_rank(A @ B) == r
