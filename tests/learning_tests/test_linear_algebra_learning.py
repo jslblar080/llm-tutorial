@@ -558,9 +558,19 @@ class TestLinearAlgebraLearning:
         """
         mxn matrix with reduced-rank r via multiplication
         rank(A @ B) <= min(rank(A), rank(B))
+        C = A @ B
+        ci = ai @ B
+        cj = A @ bj
         """
         m, n = np.random.randint(51, 100, size=2)
         r = np.random.randint(1, 50)
         A = np.random.randn(m, r)
         B = np.random.randn(r, n)
-        assert np.linalg.matrix_rank(A @ B) == r
+        C = A @ B
+        assert np.linalg.matrix_rank(C) == r
+        """
+        rank(C @ C.T) == rank(C) == rank(C.T) == rank(C.T @ C)
+        """
+        assert np.linalg.matrix_rank(C @ C.T) == np.linalg.matrix_rank(C)
+        assert np.linalg.matrix_rank(C) == np.linalg.matrix_rank(C.T)
+        assert np.linalg.matrix_rank(C.T) == np.linalg.matrix_rank(C.T @ C)
