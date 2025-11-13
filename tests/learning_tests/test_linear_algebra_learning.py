@@ -549,12 +549,16 @@ class TestLinearAlgebraLearning:
         assert rank_C == min([m - 1, n])
         F = np.round(10 * np.random.randn(m, m))
         F[:, -1] = F[:, -2]
-        noiseamp = 0.000001
-        F_noise_add = F + noiseamp * np.random.randn(m, m)
-        print(f"reduced rank without noise: {np.linalg.matrix_rank(F)}")
-        print(f"reduced rank with noise added: {np.linalg.matrix_rank(F_noise_add)}")
+        """
+        make square matrix full-rank by shifting (add small noise)
+        F~ = F + λI
+        """
+        noise_lambda = 0.000001
+        F_tilde = F + noise_lambda * np.eye(m, m)
+        print(f"reduced-rank without shifting: {np.linalg.matrix_rank(F)}")
+        print(f"full-rank with shifting: {np.linalg.matrix_rank(F_tilde)}")
         assert np.linalg.matrix_rank(F) == m - 1
-        assert np.linalg.matrix_rank(F_noise_add) == m
+        assert np.linalg.matrix_rank(F_tilde) == m
         """
         mxn matrix with reduced-rank r via multiplication
         rank(A @ B) <= min(rank(A), rank(B))
