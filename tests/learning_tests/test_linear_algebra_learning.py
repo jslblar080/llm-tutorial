@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import sympy
 import torch
 
 from mpl_toolkits.mplot3d import Axes3D
@@ -594,3 +595,33 @@ class TestLinearAlgebraLearning:
                 print(f"vector v {v}\nis in span of set {set_name}\n{set}")
             else:
                 return
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_reduced_row_echelon_form
+    def test_reduced_row_echelon_form(self):
+        m, n = 6, 4
+        assert m >= n
+        A = sympy.Matrix(np.random.randn(m, m))
+        B = sympy.Matrix(np.random.randn(m, n))
+        C = sympy.Matrix(np.random.randn(n, m))
+        D = sympy.Matrix(np.random.randn(n, n))
+        D[:, 0] = D[:, 1]
+        A_rref = np.array(A.rref()[0])
+        B_rref = np.array(B.rref()[0])
+        C_rref = np.array(C.rref()[0])
+        D_rref = np.array(D.rref()[0])
+        print(f"\n{A_rref}")
+        assert sum(np.any(A_rref != 0, axis=1)) == np.linalg.matrix_rank(
+            sympy.matrix2numpy(A, dtype=float)
+        )
+        print(f"\n{B_rref}")
+        assert sum(np.any(B_rref != 0, axis=1)) == np.linalg.matrix_rank(
+            sympy.matrix2numpy(B, dtype=float)
+        )
+        print(f"\n{C_rref}")
+        assert sum(np.any(C_rref != 0, axis=1)) == np.linalg.matrix_rank(
+            sympy.matrix2numpy(C, dtype=float)
+        )
+        print(f"\n{D_rref}")
+        assert sum(np.any(D_rref != 0, axis=1)) == np.linalg.matrix_rank(
+            sympy.matrix2numpy(D, dtype=float)
+        )
