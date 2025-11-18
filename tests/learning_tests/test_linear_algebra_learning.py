@@ -588,7 +588,7 @@ class TestLinearAlgebraLearning:
             ("S", np.array([[4, 3, 6, 2], [0, 4, 0, 1]])),
             ("T", np.array([[1, 2, 2, 2], [0, 0, 1, 2]])),
         ):
-            set_stacked = np.vstack([set, v])
+            set_stacked = np.row_stack([set, v])
             if np.linalg.matrix_rank(set_stacked) == 3:
                 print(f"vector v {v}\nis not in span of set {set_name}\n{set}")
             elif np.linalg.matrix_rank(set_stacked) < 3:
