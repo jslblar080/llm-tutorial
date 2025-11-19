@@ -555,7 +555,7 @@ class TestLinearAlgebraLearning:
         F~ = F + λI
         """
         noise_lambda = 0.000001
-        F_tilde = F + noise_lambda * np.eye(m, m)
+        F_tilde = F + noise_lambda * np.eye(m)
         print(f"reduced-rank without shifting: {np.linalg.matrix_rank(F)}")
         print(f"full-rank with shifting: {np.linalg.matrix_rank(F_tilde)}")
         assert np.linalg.matrix_rank(F) == m - 1
@@ -654,3 +654,25 @@ class TestLinearAlgebraLearning:
         print(det_M2)
         assert np.isclose(det_M1, -det_M0)
         assert np.isclose(det_M2, det_M0)
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_shifted_matrix_determinant
+    def test_shifted_matrix_determinant(self):
+        np.random.seed(123)
+        n = 20
+        lambdas = np.linspace(0, 0.1, 30)
+        tmp = np.zeros((1000, len(lambdas)))
+        for idx in range(len(tmp)):
+            M = np.random.randn(n, n)
+            M[:, 0] = M[:, 1]
+            # (30,1,1) * (n,n) + (n,n) -> (30,n,n) + (30,n,n) (broadcasting)
+            shifted_matrices = lambdas[:, None, None] * np.eye(n) + M
+            tmp[idx] = np.abs(np.linalg.det(shifted_matrices))
+        determinants = np.mean(tmp, axis=0)
+        plt.plot(lambdas, determinants, marker="s", color="blue", linestyle="-")
+        plt.xlabel("Fraction of identity matrix for shifting")
+        plt.ylabel("Determinant")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        os.makedirs(os.path.join(script_dir, "outputs"), exist_ok=True)
+        save_path = os.path.join(script_dir, "outputs", "lambdas_determinants.png")
+        plt.savefig(save_path)
+        plt.close()
