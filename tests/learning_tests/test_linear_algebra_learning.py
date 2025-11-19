@@ -625,3 +625,17 @@ class TestLinearAlgebraLearning:
         assert sum(np.any(D_rref != 0, axis=1)) == np.linalg.matrix_rank(
             sympy.matrix2numpy(D, dtype=float)
         )
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_reduced_rank_matrix_determinant
+    def test_reduced_rank_matrix_determinant(self):
+        v = np.random.randn(2)
+        k = np.random.randn()
+        M = np.column_stack([v, k * v])
+        """
+        In theory, without concerning computer precision error,
+        determinant of matrix with linearly dependent columns is zero
+
+        hard to determine singular matrix
+        if size of matrix is large
+        """
+        assert np.isclose(np.linalg.det(M), 0)
