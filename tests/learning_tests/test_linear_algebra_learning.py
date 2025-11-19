@@ -639,3 +639,18 @@ class TestLinearAlgebraLearning:
         if size of matrix is large
         """
         assert np.isclose(np.linalg.det(M), 0)
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_row_exchanged_matrix_determinant
+    def test_row_exchanged_matrix_determinant(self):
+        n = 6
+        M = np.random.randn(n, n)
+        det_M0 = np.linalg.det(M)
+        print(f"\n{det_M0}")
+        M[[0, 1]] = M[[1, 0]]
+        det_M1 = np.linalg.det(M)
+        print(det_M1)
+        M[[0, 2]] = M[[2, 0]]
+        det_M2 = np.linalg.det(M)
+        print(det_M2)
+        assert np.isclose(det_M1, -det_M0)
+        assert np.isclose(det_M2, det_M0)
