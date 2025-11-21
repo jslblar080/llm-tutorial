@@ -580,6 +580,16 @@ class TestLinearAlgebraLearning:
         assert np.linalg.matrix_rank(C) == np.linalg.matrix_rank(C.T)
         assert np.linalg.matrix_rank(C.T) == np.linalg.matrix_rank(C.T @ C)
         """
+        left inverse for tall matrix (A) with full column-rank
+        : (A.T@A)-1@A.T @ A = I
+        right inverse for wide matrix (B) with full row-rank
+        : B @ B.T@(B@B.T)-1 = I
+        """
+        assert np.linalg.matrix_rank(A) == r
+        assert np.linalg.matrix_rank(A.T @ A) == np.linalg.matrix_rank(A)
+        assert np.linalg.matrix_rank(B) == r
+        assert np.linalg.matrix_rank(B @ B.T) == np.linalg.matrix_rank(B)
+        """
         determine whether vector(v) is in span of set(S or T) via augmentation
         """
         v = np.array([1, 2, 3, 4])
