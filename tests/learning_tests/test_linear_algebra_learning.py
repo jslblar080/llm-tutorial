@@ -686,3 +686,11 @@ class TestLinearAlgebraLearning:
         save_path = os.path.join(script_dir, "outputs", "lambdas_determinants.png")
         plt.savefig(save_path)
         plt.close()
+
+    # pytest -sv tests/learning_tests/test_linear_algebra_learning.py::TestLinearAlgebraLearning::test_full_rank_matrix_pseudoinverse
+    def test_full_rank_matrix_pseudoinverse(self):
+        n = 5
+        M = np.random.randn(n, n)
+        Minv = np.linalg.inv(M)
+        Mpseudo = np.linalg.pinv(M)
+        assert np.allclose(Minv - Mpseudo, 0)
